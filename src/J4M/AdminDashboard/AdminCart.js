@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const AdminCart = () => {
   const [carts, setCarts] = useState([]);
   const [newCart, setNewCart] = useState({
-    number: 1, // Giá trị mặc định
+    number: 1,
     productSizeID: { productSizeID: null },
     accountID: { accountID: null },
     status: "Enable",
@@ -65,7 +65,7 @@ const AdminCart = () => {
     }
   };
 
-  const handleSave = async (id, number, productSizeID) => {
+  const handleSave = async (id, cart) => {
     try {
       const response = await fetch(
         `http://localhost:8080/api/v1/admin/cart/${id}`,
@@ -76,7 +76,12 @@ const AdminCart = () => {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ number, productSizeID }),
+          body: JSON.stringify({ 
+            number: cart.number, 
+            productSizeID: { productSizeID: cart.productSizeID.productSizeID }, 
+            accountID: { accountID: cart.accountID.accountID },
+            status: cart.status 
+          }),
         }
       );
 
@@ -128,12 +133,11 @@ const AdminCart = () => {
     } catch (err) {
         setError(err.message);
     }
-};
-
+  };
 
   const handleInputChange = (e, id, field) => {
     const value =
-      field === "number" ? parseInt(e.target.value, 10) : e.target.value; // Chuyển đổi `number` thành số
+      field === "number" ? parseInt(e.target.value, 10) : e.target.value;
     setCarts((prevCarts) =>
       prevCarts.map((cart) =>
         cart.cartID === id ? { ...cart, [field]: value } : cart
@@ -141,8 +145,24 @@ const AdminCart = () => {
     );
   };
 
+  const handleEditChange = (e, id, field, nestedField) => {
+    const value = e.target.value;
+    setCarts((prevCarts) =>
+      prevCarts.map((cart) =>
+        cart.cartID === id
+          ? {
+              ...cart,
+              [field]: nestedField
+                ? { [nestedField]: parseInt(value, 10) }
+                : value,
+            }
+          : cart
+      )
+    );
+  };
+
   const handleBackToDashboard = () => {
-    navigate("/dashboard"); // Chuyển hướng về trang Dashboard
+    navigate("/dashboard");
   };
 
   return (
@@ -228,28 +248,72 @@ const AdminCart = () => {
                     cart.number
                   )}
                 </td>
-                <td>{cart.productSizeID.productSizeID}</td>
-                <td>{cart.accountID.accountID}</td>
-                <td>{cart.status}</td>
+                <td>
+                  {editingCartId === cart.cartID ? (
+                    <input
+                      type="number"
+                      value={cart.productSizeID.productSizeID || ""}
+                      onChange={(e) =>
+                        handleEditChange(
+                          e,
+                          cart.cartID,
+                          "productSizeID",
+                          "productSizeID"
+                        )
+                      }
+                    />
+                  ) : (
+                    cart.productSizeID.productSizeID
+                  )}
+                </td>
+                <td>
+                  {editingCartId === cart.cartID ? (
+                    <input
+                      type="number"
+                      value={cart.accountID.accountID || ""}
+                      onChange={(e) =>
+                        handleEditChange(
+                          e,
+                          cart.cartID,
+                          "accountID",
+                          "accountID"
+                        )
+                      }
+                    />
+                  ) : (
+                    cart.accountID.accountID
+                  )}
+                </td>
+                <td>
+                  {editingCartId === cart.cartID ? (
+                    <select
+                      value={cart.status}
+                      onChange={(e) =>
+                        handleInputChange(e, cart.cartID, "status")
+                      }
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    cart.status
+                  )}
+                </td>
                 <td>
                   {editingCartId === cart.cartID ? (
                     <button
-                      onClick={() =>
-                        handleSave(cart.cartID, cart.number, cart.productSizeID)
-                      }
+                      onClick={() => handleSave(cart.cartID, cart)}
                     >
-                      Lưu
+                      Save
                     </button>
                   ) : (
-                    <>
-                      <button onClick={() => setEditingCartId(cart.cartID)}>
-                        Cập Nhật
-                      </button>
-                      <button onClick={() => handleDelete(cart.cartID)}>
-                        Xóa
-                      </button>
-                    </>
+                    <button
+                      onClick={() => setEditingCartId(cart.cartID)}
+                    >
+                      Edit
+                    </button>
                   )}
+                  <button onClick={() => handleDelete(cart.cartID)}>Disable</button>
                 </td>
               </tr>
             ))}

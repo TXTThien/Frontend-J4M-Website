@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 
 const AdminBrand = () => {
   const [brands, setBrands] = useState([]);
-  const [editingBrandId, setEditingBrandId] = useState(null); 
-  const [newBrandName, setNewBrandName] = useState(""); 
+  const [editingBrandId, setEditingBrandId] = useState(null);
+  const [newBrandName, setNewBrandName] = useState("");
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem("access_token");
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -109,7 +109,7 @@ const AdminBrand = () => {
       if (response.ok) {
         const createdBrand = await response.json();
         setBrands([...brands, createdBrand]);
-        setNewBrandName(""); 
+        setNewBrandName("");
       } else {
         throw new Error("Không thể tạo thương hiệu.");
       }
@@ -117,14 +117,15 @@ const AdminBrand = () => {
       setError(err.message);
     }
   };
+  
   const handleBackToDashboard = () => {
-    navigate("/dashboard"); 
+    navigate("/dashboard");
   };
 
   return (
     <div>
       <h2>Quản Lý Thương Hiệu</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button> {/* Nút quay lại */}
+      <button onClick={handleBackToDashboard}>Quay Lại</button>
       <h3>Thêm Thương Hiệu Mới</h3>
       <div>
         <label>Tên Thương Hiệu: </label>
@@ -170,11 +171,37 @@ const AdminBrand = () => {
                     brand.brandName
                   )}
                 </td>
-                <td>{brand.status}</td>
+                <td>
+                  {editingBrandId === brand.brandID ? (
+                    <select
+                      value={brand.status}
+                      onChange={(e) =>
+                        setBrands((prevBrands) =>
+                          prevBrands.map((b) =>
+                            b.brandID === brand.brandID
+                              ? { ...b, status: e.target.value }
+                              : b
+                          )
+                        )
+                      }
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    brand.status
+                  )}
+                </td>
                 <td>
                   {editingBrandId === brand.brandID ? (
                     <>
-                      <button onClick={() => handleSave(brand.brandID, brand.brandName, brand.status)}>Lưu</button>
+                      <button
+                        onClick={() =>
+                          handleSave(brand.brandID, brand.brandName, brand.status)
+                        }
+                      >
+                        Lưu
+                      </button>
                       <button onClick={() => setEditingBrandId(null)}>Hủy</button>
                     </>
                   ) : (

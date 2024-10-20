@@ -6,6 +6,7 @@ const AdminImage = () => {
   const [editingImageId, setEditingImageId] = useState(null);
   const [newImageURL, setNewImageURL] = useState("");
   const [selectedProductId, setSelectedProductId] = useState("");
+  const [newImageStatus, setNewImageStatus] = useState("Enable"); // Thêm trạng thái mới
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem("access_token");
   const navigate = useNavigate();
@@ -95,7 +96,11 @@ const AdminImage = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ imageURL: newImageURL, product: { productID: selectedProductId }, status: "Enable" }),
+        body: JSON.stringify({ 
+          imageURL: newImageURL, 
+          product: { productID: selectedProductId }, 
+          status: newImageStatus // Gửi trạng thái mới
+        }),
       });
 
       if (response.ok) {
@@ -103,6 +108,7 @@ const AdminImage = () => {
         setImages([...images, createdImage]);
         setNewImageURL("");
         setSelectedProductId("");
+        setNewImageStatus("Enable"); // Reset trạng thái mới
       } else {
         throw new Error("Không thể tạo hình ảnh.");
       }
@@ -131,6 +137,14 @@ const AdminImage = () => {
           value={selectedProductId}
           onChange={(e) => setSelectedProductId(e.target.value)}
         />
+        <label>Trạng Thái: </label>
+        <select 
+          value={newImageStatus} 
+          onChange={(e) => setNewImageStatus(e.target.value)}
+        >
+          <option value="Enable">Enable</option>
+          <option value="Disable">Disable</option>
+        </select>
         <button onClick={handleCreate}>Thêm</button>
       </div>
 
@@ -170,8 +184,45 @@ const AdminImage = () => {
                     image.imageURL
                   )}
                 </td>
-                <td>{image.product.productID}</td>
-                <td>{image.status}</td>
+                <td>
+                  {editingImageId === image.imageID ? (
+                    <input
+                      value={image.product.productID}
+                      onChange={(e) =>
+                        setImages((prevImages) =>
+                          prevImages.map((i) =>
+                            i.imageID === image.imageID
+                              ? { ...i, product: { productID: e.target.value } }
+                              : i
+                          )
+                        )
+                      }
+                    />
+                  ) : (
+                    image.product.productID
+                  )}
+                </td>
+                <td>
+                  {editingImageId === image.imageID ? (
+                    <select
+                      value={image.status}
+                      onChange={(e) =>
+                        setImages((prevImages) =>
+                          prevImages.map((i) =>
+                            i.imageID === image.imageID
+                              ? { ...i, status: e.target.value }
+                              : i
+                          )
+                        )
+                      }
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    image.status
+                  )}
+                </td>
                 <td>
                   {editingImageId === image.imageID ? (
                     <>

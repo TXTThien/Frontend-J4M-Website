@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 const AdminSize = () => {
   const [sizeList, setSizeList] = useState([]);
   const [newSize, setNewSize] = useState({
-    sizeID: "",
     sizeName: "",
     bonus: 0.00,
     status: "Enable",
@@ -105,14 +104,13 @@ const AdminSize = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(newSize),
+        body: JSON.stringify(newSize), // Chỉ gửi sizeName, bonus, và status
       });
 
       if (response.ok) {
         const createdSize = await response.json();
         setSizeList([...sizeList, createdSize]);
         setNewSize({
-          sizeID: "",
           sizeName: "",
           bonus: 0.00,
           status: "Enable",
@@ -136,14 +134,6 @@ const AdminSize = () => {
 
       <h3>Thêm Kích Thước Mới</h3>
       <div>
-        <label>ID Kích Thước: </label>
-        <input
-          type="number"
-          value={newSize.sizeID}
-          onChange={(e) =>
-            setNewSize((prev) => ({ ...prev, sizeID: e.target.value }))
-          }
-        />
         <label>Tên Kích Thước: </label>
         <input
           value={newSize.sizeName}
