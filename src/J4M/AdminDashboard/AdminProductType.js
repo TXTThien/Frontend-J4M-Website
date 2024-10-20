@@ -66,7 +66,7 @@ const AdminProductType = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ typeName, categoryID, status }),
+        body: JSON.stringify({ typeName, categoryID: { categoryID }, status }), // Cập nhật đúng định dạng
       });
 
       if (response.ok) {
@@ -91,7 +91,14 @@ const AdminProductType = () => {
       setError("Vui lòng điền đủ các trường cần thiết.");
       return;
     }
-
+  
+    // In ra log dữ liệu sẽ được gửi trong yêu cầu POST
+    console.log("Dữ liệu sẽ được gửi:", {
+      typeName: newProductType.typeName,
+      categoryID: { categoryID: newProductType.categoryID },
+      status: newProductType.status,
+    });
+  
     try {
       const response = await fetch("http://localhost:8080/api/v1/admin/producttype", {
         method: "POST",
@@ -100,9 +107,13 @@ const AdminProductType = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(newProductType),
+        body: JSON.stringify({
+          typeName: newProductType.typeName,  // Đảm bảo trường này là đầu tiên
+          categoryID: { categoryID: newProductType.categoryID }, // Trường thứ hai
+          status: newProductType.status // Trường thứ ba
+        }),
       });
-
+  
       if (response.ok) {
         const createdProductType = await response.json();
         setProductTypes([...productTypes, createdProductType]);
@@ -114,6 +125,8 @@ const AdminProductType = () => {
       setError(err.message);
     }
   };
+  
+  
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");
@@ -189,7 +202,7 @@ const AdminProductType = () => {
                   {editingProductTypeId === type.productTypeID ? (
                     <input
                       type="text"
-                      value={type.categoryID.categoryID}
+                      value={type.categoryID.categoryID} // Hiển thị ID danh mục
                       onChange={(e) =>
                         setProductTypes((prevProductTypes) =>
                           prevProductTypes.map((t) =>
@@ -201,14 +214,34 @@ const AdminProductType = () => {
                       }
                     />
                   ) : (
-                    type.categoryID.categoryName
+                    type.categoryID.categoryID // Hiển thị ID danh mục
                   )}
                 </td>
-                <td>{type.status}</td>
+                <td>
+                  {editingProductTypeId === type.productTypeID ? (
+                    <select
+                      value={type.status}
+                      onChange={(e) =>
+                        setProductTypes((prevProductTypes) =>
+                          prevProductTypes.map((t) =>
+                            t.productTypeID === type.productTypeID
+                              ? { ...t, status: e.target.value }
+                              : t
+                          )
+                        )
+                      }
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    type.status
+                  )}
+                </td>
                 <td>
                   {editingProductTypeId === type.productTypeID ? (
                     <>
-                      <button onClick={() => handleSave(type.productTypeID, type.typeName, type.categoryID, type.status)}>Lưu</button>
+                      <button onClick={() => handleSave(type.productTypeID, type.typeName, type.categoryID.categoryID, type.status)}>Lưu</button>
                       <button onClick={() => setEditingProductTypeId(null)}>Hủy</button>
                     </>
                   ) : (

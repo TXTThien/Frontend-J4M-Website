@@ -57,8 +57,15 @@ const AdminProductSize = () => {
     }
   };
 
-  const handleSave = async (id, stock, status) => {
+  const handleSave = async (id, productID, sizeID, stock, status) => {
     try {
+      const updatedProductSizeData = {
+        productID: { productID: parseInt(productID) }, // Giữ nguyên productID
+        sizeID: { sizeID: parseInt(sizeID) }, // Giữ nguyên sizeID
+        stock: parseInt(stock), // Chuyển đổi sang số
+        status: status,
+      };
+  
       const response = await fetch(`http://localhost:8080/api/v1/admin/productsize/${id}`, {
         method: "PUT",
         headers: {
@@ -66,9 +73,9 @@ const AdminProductSize = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ stock, status }),
+        body: JSON.stringify(updatedProductSizeData),
       });
-
+  
       if (response.ok) {
         const updatedProductSize = await response.json();
         setProductSizes((prevProductSizes) =>
@@ -84,6 +91,7 @@ const AdminProductSize = () => {
       setError(err.message);
     }
   };
+  
 
   const handleCreate = async () => {
     // Kiểm tra các trường nhập
@@ -93,6 +101,14 @@ const AdminProductSize = () => {
     }
 
     try {
+      // Tạo đối tượng dữ liệu theo cấu trúc mong muốn
+      const productSizeData = {
+        productID: { productID: parseInt(newProductSize.productID) }, // Chuyển đổi sang số
+        sizeID: { sizeID: parseInt(newProductSize.sizeID) }, // Chuyển đổi sang số
+        stock: parseInt(newProductSize.stock), // Chuyển đổi sang số
+        status: newProductSize.status,
+      };
+
       const response = await fetch("http://localhost:8080/api/v1/admin/productsize", {
         method: "POST",
         headers: {
@@ -100,7 +116,7 @@ const AdminProductSize = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify(newProductSize),
+        body: JSON.stringify(productSizeData),
       });
 
       if (response.ok) {
@@ -114,6 +130,7 @@ const AdminProductSize = () => {
       setError(err.message);
     }
   };
+
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");
@@ -162,8 +179,8 @@ const AdminProductSize = () => {
           <thead>
             <tr>
               <th>ID Kích Thước Sản Phẩm</th>
-              <th>Sản Phẩm</th>
-              <th>Kích Thước</th>
+              <th>ID Sản Phẩm</th>
+              <th>ID Kích Thước</th>
               <th>Tồn Kho</th>
               <th>Trạng Thái</th>
               <th>Hành động</th>
@@ -173,8 +190,44 @@ const AdminProductSize = () => {
             {productSizes.map((size) => (
               <tr key={size.productSizeID}>
                 <td>{size.productSizeID}</td>
-                <td>{size.productID.title}</td> {/* Thay đổi để hiển thị tên sản phẩm */}
-                <td>{size.sizeID.sizeName}</td> {/* Thay đổi để hiển thị tên kích thước */}
+                <td>
+                  {editingProductSizeId === size.productSizeID ? (
+                    <input
+                      type="text"
+                      value={size.productID.productID}
+                      onChange={(e) =>
+                        setProductSizes((prevProductSizes) =>
+                          prevProductSizes.map((s) =>
+                            s.productSizeID === size.productSizeID
+                              ? { ...s, productID: { productID: e.target.value } }
+                              : s
+                          )
+                        )
+                      }
+                    />
+                  ) : (
+                    size.productID.productID
+                  )}
+                </td>
+                <td>
+                  {editingProductSizeId === size.productSizeID ? (
+                    <input
+                      type="text"
+                      value={size.sizeID.sizeID}
+                      onChange={(e) =>
+                        setProductSizes((prevProductSizes) =>
+                          prevProductSizes.map((s) =>
+                            s.productSizeID === size.productSizeID
+                              ? { ...s, sizeID: { sizeID: e.target.value } }
+                              : s
+                          )
+                        )
+                      }
+                    />
+                  ) : (
+                    size.sizeID.sizeID
+                  )}
+                </td>
                 <td>
                   {editingProductSizeId === size.productSizeID ? (
                     <input
@@ -194,11 +247,31 @@ const AdminProductSize = () => {
                     size.stock
                   )}
                 </td>
-                <td>{size.status}</td>
+                <td>
+                  {editingProductSizeId === size.productSizeID ? (
+                    <select
+                      value={size.status}
+                      onChange={(e) =>
+                        setProductSizes((prevProductSizes) =>
+                          prevProductSizes.map((s) =>
+                            s.productSizeID === size.productSizeID
+                              ? { ...s, status: e.target.value }
+                              : s
+                          )
+                        )
+                      }
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    size.status
+                  )}
+                </td>
                 <td>
                   {editingProductSizeId === size.productSizeID ? (
                     <>
-                      <button onClick={() => handleSave(size.productSizeID, size.stock, size.status)}>Lưu</button>
+                      <button onClick={() => handleSave(size.productSizeID, size.productID.productID, size.sizeID.sizeID, size.stock, size.status)}>Lưu</button>
                       <button onClick={() => setEditingProductSizeId(null)}>Hủy</button>
                     </>
                   ) : (
@@ -211,6 +284,8 @@ const AdminProductSize = () => {
               </tr>
             ))}
           </tbody>
+
+
         </table>
       )}
     </div>

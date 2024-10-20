@@ -162,7 +162,27 @@ const AdminCategory = () => {
                     category.categoryName
                   )}
                 </td>
-                <td>{category.status}</td>
+                <td>
+                  {editingCategoryId === category.categoryID ? (
+                    <select
+                      value={category.status}
+                      onChange={(e) =>
+                        setCategories((prevCategories) =>
+                          prevCategories.map((c) =>
+                            c.categoryID === category.categoryID
+                              ? { ...c, status: e.target.value }
+                              : c
+                          )
+                        )
+                      }
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    category.status
+                  )}
+                </td>
                 <td>
                   {editingCategoryId === category.categoryID ? (
                     <>

@@ -4,9 +4,8 @@ import { useNavigate } from "react-router-dom";
 const AdminBanner = () => {
   const [bannerList, setBannerList] = useState([]);
   const [newBanner, setNewBanner] = useState({
-    bannerID: "",
     bannerImage: "",
-    bannerType: "advertisement", // Mặc định là advertisement
+    bannerType: "advertisement",
     productID: { productID: null },
     productTypeID: { productTypeID: null },
     categoryID: { categoryID: null },
@@ -16,6 +15,7 @@ const AdminBanner = () => {
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem("access_token");
   const navigate = useNavigate();
+  const [idType, setIdType] = useState("productID"); // Loại ID đang chọn
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -28,14 +28,14 @@ const AdminBanner = () => {
         });
 
         if (!response.ok) {
-          const errorMessage = await response.text(); // Lấy thông điệp lỗi từ server
+          const errorMessage = await response.text();
           throw new Error(`Lỗi: ${response.status} - ${errorMessage}`);
         }
 
         const data = await response.json();
         setBannerList(data || []);
       } catch (err) {
-        console.error("Lỗi khi lấy banner:", err.message); // Ghi lại thông điệp lỗi
+        console.error("Lỗi khi lấy banner:", err.message);
         setError(err.message);
       }
     };
@@ -72,6 +72,16 @@ const AdminBanner = () => {
 
   const handleSave = async (id, bannerData) => {
     try {
+      const bannerToUpdate = bannerList.find(banner => banner.bannerID === id);
+  
+      const updatedBannerData = {
+        ...bannerToUpdate,
+        ...bannerData,
+        productID: bannerData.productID.productID ? { productID: bannerData.productID.productID } : null,
+        productTypeID: bannerData.productTypeID.productTypeID ? { productTypeID: bannerData.productTypeID.productTypeID } : null,
+        categoryID: bannerData.categoryID.categoryID ? { categoryID: bannerData.categoryID.categoryID } : null,
+      };
+  
       const response = await fetch(
         `http://localhost:8080/api/v1/admin/banner/${id}`,
         {
@@ -81,10 +91,10 @@ const AdminBanner = () => {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify(bannerData),
+          body: JSON.stringify(updatedBannerData),
         }
       );
-
+  
       if (response.ok) {
         const updatedBanner = await response.json();
         setBannerList((prevBannerList) =>
@@ -103,33 +113,46 @@ const AdminBanner = () => {
 
   const handleCreate = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/v1/admin/banner", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accesstoken}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(newBanner),
-      });
+        const { productID, productTypeID, categoryID } = newBanner;
 
-      if (response.ok) {
-        const createdBanner = await response.json();
-        setBannerList([...bannerList, createdBanner]);
-        setNewBanner({
-          bannerID: "",
-          bannerImage: "",
-          bannerType: "advertisement", // Đặt lại về giá trị mặc định
-          productID: { productID: null },
-          productTypeID: { productTypeID: null },
-          categoryID: { categoryID: null },
-          status: "Enable",
+        const filteredBanner = {
+            bannerImage: newBanner.bannerImage,
+            bannerType: newBanner.bannerType,
+            status: newBanner.status,
+            ...(productID.productID && { productID: { productID: productID.productID } }),
+            ...(productTypeID.productTypeID && { productTypeID: { productTypeID: productTypeID.productTypeID } }),
+            ...(categoryID.categoryID && { categoryID: { categoryID: categoryID.categoryID } }),
+        };
+
+        console.log("Dữ liệu banner đang gửi:", filteredBanner);
+
+        const response = await fetch("http://localhost:8080/api/v1/admin/banner", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accesstoken}`,
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(filteredBanner),
         });
-      } else {
-        throw new Error("Không thể tạo banner.");
-      }
+
+        if (response.ok) {
+            const createdBanner = await response.json();
+            setBannerList([...bannerList, createdBanner]);
+            setNewBanner({
+                bannerImage: "",
+                bannerType: "advertisement",
+                productID: { productID: null },
+                productTypeID: { productTypeID: null },
+                categoryID: { categoryID: null },
+                status: "Enable",
+            });
+            setIdType("productID");
+        } else {
+            throw new Error("Không thể tạo banner.");
+        }
     } catch (err) {
-      setError(err.message);
+        setError(err.message);
     }
   };
 
@@ -144,14 +167,6 @@ const AdminBanner = () => {
 
       <h3>Thêm Banner Mới</h3>
       <div>
-        <label>ID Banner: </label>
-        <input
-          type="number"
-          value={newBanner.bannerID}
-          onChange={(e) =>
-            setNewBanner((prev) => ({ ...prev, bannerID: e.target.value }))
-          }
-        />
         <label>Hình Ảnh Banner: </label>
         <input
           value={newBanner.bannerImage}
@@ -171,41 +186,71 @@ const AdminBanner = () => {
           <option value="event">Event</option>
         </select>
         
-        <label>ID Sản Phẩm: </label>
-        <input
-          type="number"
-          value={newBanner.productID.productID || ""}
-          onChange={(e) =>
+        <label>Chọn ID:</label>
+        <select
+          value={idType}
+          onChange={(e) => {
+            setIdType(e.target.value);
             setNewBanner((prev) => ({
               ...prev,
-              productID: { productID: e.target.value },
-            }))
-          }
-        />
+              productID: { productID: null },
+              productTypeID: { productTypeID: null },
+              categoryID: { categoryID: null },
+            }));
+          }}
+        >
+          <option value="productID">Sản Phẩm</option>
+          <option value="productTypeID">Loại Sản Phẩm</option>
+          <option value="categoryID">Danh Mục</option>
+        </select>
 
-        <label>ID Loại Sản Phẩm: </label>
-        <input
-          type="number"
-          value={newBanner.productTypeID.productTypeID || ""}
-          onChange={(e) =>
-            setNewBanner((prev) => ({
-              ...prev,
-              productTypeID: { productTypeID: e.target.value },
-            }))
-          }
-        />
+        {idType === "productID" && (
+          <div>
+            <label>ID Sản Phẩm: </label>
+            <input
+              type="number"
+              value={newBanner.productID.productID || ""}
+              onChange={(e) =>
+                setNewBanner((prev) => ({
+                  ...prev,
+                  productID: { productID: e.target.value },
+                }))
+              }
+            />
+          </div>
+        )}
 
-        <label>ID Danh Mục: </label>
-        <input
-          type="number"
-          value={newBanner.categoryID.categoryID || ""}
-          onChange={(e) =>
-            setNewBanner((prev) => ({
-              ...prev,
-              categoryID: { categoryID: e.target.value },
-            }))
-          }
-        />
+        {idType === "productTypeID" && (
+          <div>
+            <label>ID Loại Sản Phẩm: </label>
+            <input
+              type="number"
+              value={newBanner.productTypeID.productTypeID || ""}
+              onChange={(e) =>
+                setNewBanner((prev) => ({
+                  ...prev,
+                  productTypeID: { productTypeID: e.target.value },
+                }))
+              }
+            />
+          </div>
+        )}
+
+        {idType === "categoryID" && (
+          <div>
+            <label>ID Danh Mục: </label>
+            <input
+              type="number"
+              value={newBanner.categoryID.categoryID || ""}
+              onChange={(e) =>
+                setNewBanner((prev) => ({
+                  ...prev,
+                  categoryID: { categoryID: e.target.value },
+                }))
+              }
+            />
+          </div>
+        )}
 
         <label>Trạng thái: </label>
         <select
@@ -229,82 +274,49 @@ const AdminBanner = () => {
           <thead>
             <tr>
               <th>ID Banner</th>
-              <th>Hình Ảnh</th> {/* Hiển thị đường dẫn hình ảnh */}
+              <th>Hình Ảnh</th>
               <th>Loại Banner</th>
+              <th>ID Sản Phẩm</th>
+              <th>ID Loại Sản Phẩm</th>
+              <th>ID Danh Mục</th>
               <th>Trạng Thái</th>
-              <th>Thao Tác</th>
+              <th>Hành Động</th>
             </tr>
           </thead>
           <tbody>
             {bannerList.map((banner) => (
               <tr key={banner.bannerID}>
                 <td>{banner.bannerID}</td>
-                <td>
-                  {banner.bannerImage} {/* Hiển thị đường dẫn hình ảnh */}
-                </td>
-                <td>
-                  {editingBannerId === banner.bannerID ? (
-                    <input
-                      value={banner.bannerType}
-                      onChange={(e) =>
-                        setBannerList((prevBannerList) =>
-                          prevBannerList.map((b) =>
-                            b.bannerID === banner.bannerID
-                              ? { ...b, bannerType: e.target.value }
-                              : b
-                          )
-                        )
-                      }
-                    />
-                  ) : (
-                    banner.bannerType
-                  )}
-                </td>
-                <td>
-                  {editingBannerId === banner.bannerID ? (
-                    <select
-                      value={banner.status}
-                      onChange={(e) =>
-                        setBannerList((prevBannerList) =>
-                          prevBannerList.map((b) =>
-                            b.bannerID === banner.bannerID
-                              ? { ...b, status: e.target.value }
-                              : b
-                          )
-                        )
-                      }
-                    >
-                      <option value="Enable">Enable</option>
-                      <option value="Disable">Disable</option>
-                    </select>
-                  ) : (
-                    banner.status
-                  )}
-                </td>
+                <td>{banner.bannerImage}</td>
+                <td>{banner.bannerType}</td>
+                <td>{banner.productID?.productID || "N/A"}</td>
+                <td>{banner.productTypeID?.productTypeID || "N/A"}</td>
+                <td>{banner.categoryID?.categoryID || "N/A"}</td>
+                <td>{banner.status}</td>
                 <td>
                   {editingBannerId === banner.bannerID ? (
                     <>
-                      <button
-                        onClick={() =>
-                          handleSave(banner.bannerID, {
-                            bannerImage: banner.bannerImage,
-                            bannerType: banner.bannerType,
-                            status: banner.status,
-                          })
-                        }
-                      >
-                        Lưu
-                      </button>
-                      <button onClick={() => setEditingBannerId(null)}>
-                        Hủy
-                      </button>
+                      <button onClick={() => handleSave(banner.bannerID, newBanner)}>Lưu</button>
+                      <button onClick={() => setEditingBannerId(null)}>Hủy</button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleDelete(banner.bannerID)}>Xóa</button>
-                      <button onClick={() => setEditingBannerId(banner.bannerID)}>
+                      <button
+                        onClick={() => {
+                          setEditingBannerId(banner.bannerID);
+                          setNewBanner({
+                            bannerImage: banner.bannerImage,
+                            bannerType: banner.bannerType,
+                            productID: banner.productID || { productID: null },
+                            productTypeID: banner.productTypeID || { productTypeID: null },
+                            categoryID: banner.categoryID || { categoryID: null },
+                            status: banner.status,
+                          });
+                        }}
+                      >
                         Chỉnh Sửa
                       </button>
+                      <button onClick={() => handleDelete(banner.bannerID)}>Vô Hiệu Hóa</button>
                     </>
                   )}
                 </td>

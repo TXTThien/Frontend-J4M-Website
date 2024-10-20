@@ -5,6 +5,8 @@ const AdminProduct = () => {
   const [products, setProducts] = useState([]);
   const [editingProductId, setEditingProductId] = useState(null);
   const [newProduct, setNewProduct] = useState({
+    productID: "",
+    avatar: "",
     title: "",
     description: "",
     price: "",
@@ -57,9 +59,14 @@ const AdminProduct = () => {
         },
         credentials: "include",
       });
-
+  
       if (response.ok) {
-        setProducts((prevProducts) => prevProducts.filter((product) => product.productID !== id));
+        // Cập nhật danh sách sản phẩm mà không xóa sản phẩm khỏi danh sách
+        setProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product.productID === id ? { ...product, status: "Disable" } : product
+          )
+        );
       } else {
         throw new Error("Không thể xóa sản phẩm.");
       }
@@ -67,6 +74,7 @@ const AdminProduct = () => {
       setError(err.message);
     }
   };
+  
 
   const handleSave = async (id) => {
     try {
@@ -88,6 +96,18 @@ const AdminProduct = () => {
           )
         );
         setEditingProductId(null);
+        setNewProduct({
+          productID: "",
+          avatar: "",
+          title: "",
+          description: "",
+          price: "",
+          material: "",
+          productType: { productTypeID: "" },
+          brandID: { brandID: "" },
+          originID: { originID: "" },
+          status: "Enable",
+        }); // Reset input fields
       } else {
         throw new Error("Không thể cập nhật sản phẩm.");
       }
@@ -117,13 +137,29 @@ const AdminProduct = () => {
       if (response.ok) {
         const createdProduct = await response.json();
         setProducts([...products, createdProduct]);
-        setNewProduct({ title: "", description: "", price: "", material: "", productType: { productTypeID: "" }, brandID: { brandID: "" }, originID: { originID: "" }, status: "Enable" }); // Reset input fields
+        setNewProduct({
+          productID: "",
+          avatar: "",
+          title: "",
+          description: "",
+          price: "",
+          material: "",
+          productType: { productTypeID: "" },
+          brandID: { brandID: "" },
+          originID: { originID: "" },
+          status: "Enable",
+        }); // Reset input fields
       } else {
         throw new Error("Không thể tạo sản phẩm.");
       }
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleEdit = (product) => {
+    setEditingProductId(product.productID);
+    setNewProduct({ ...product }); // Sao chép sản phẩm đang sửa vào state
   };
 
   const handleBackToDashboard = () => {
@@ -179,9 +215,13 @@ const AdminProduct = () => {
           <thead>
             <tr>
               <th>ID Sản Phẩm</th>
+              <th>Avatar</th>
               <th>Tên Sản Phẩm</th>
               <th>Mô Tả</th>
+              <th>Loại Sản Phẩm ID</th>
               <th>Giá</th>
+              <th>Thương Hiệu ID</th>
+              <th>Xuất Xứ ID</th>
               <th>Chất Liệu</th>
               <th>Trạng Thái</th>
               <th>Hành Động</th>
@@ -191,11 +231,107 @@ const AdminProduct = () => {
             {products.map((product) => (
               <tr key={product.productID}>
                 <td>{product.productID}</td>
-                <td>{product.title}</td>
-                <td>{product.description}</td>
-                <td>{product.price}</td>
-                <td>{product.material}</td>
-                <td>{product.status}</td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.avatar}
+                      onChange={(e) => setNewProduct({ ...newProduct, avatar: e.target.value })}
+                    />
+                  ) : (
+                    product.avatar
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.title}
+                      onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
+                    />
+                  ) : (
+                    product.title
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.description}
+                      onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+                    />
+                  ) : (
+                    product.description
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.productType.productTypeID}
+                      onChange={(e) => setNewProduct({ ...newProduct, productType: { productTypeID: e.target.value } })}
+                    />
+                  ) : (
+                    product.productType.productTypeID
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="number"
+                      value={newProduct.price}
+                      onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                    />
+                  ) : (
+                    product.price
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.brandID.brandID}
+                      onChange={(e) => setNewProduct({ ...newProduct, brandID: { brandID: e.target.value } })}
+                    />
+                  ) : (
+                    product.brandID.brandID
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.originID.originID}
+                      onChange={(e) => setNewProduct({ ...newProduct, originID: { originID: e.target.value } })}
+                    />
+                  ) : (
+                    product.originID.originID
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <input
+                      type="text"
+                      value={newProduct.material}
+                      onChange={(e) => setNewProduct({ ...newProduct, material: e.target.value })}
+                    />
+                  ) : (
+                    product.material
+                  )}
+                </td>
+                <td>
+                  {editingProductId === product.productID ? (
+                    <select
+                      value={newProduct.status}
+                      onChange={(e) => setNewProduct({ ...newProduct, status: e.target.value })}
+                    >
+                      <option value="Enable">Enable</option>
+                      <option value="Disable">Disable</option>
+                    </select>
+                  ) : (
+                    product.status
+                  )}
+                </td>
                 <td>
                   {editingProductId === product.productID ? (
                     <>
@@ -204,7 +340,7 @@ const AdminProduct = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => setEditingProductId(product.productID)}>Sửa</button>
+                      <button onClick={() => handleEdit(product)}>Sửa</button>
                       <button onClick={() => handleDelete(product.productID)}>Xóa</button>
                     </>
                   )}

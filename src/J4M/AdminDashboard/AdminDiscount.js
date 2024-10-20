@@ -6,7 +6,7 @@ const AdminDiscount = () => {
   const [newDiscountPercent, setNewDiscountPercent] = useState("");
   const [newStartDate, setNewStartDate] = useState("");
   const [newEndDate, setNewEndDate] = useState("");
-  const [inputProductTypeId, setInputProductTypeId] = useState("");
+  const [inputProductTypeId, setInputProductTypeId] = useState(""); // Product Type ID input
   const [newStatus, setNewStatus] = useState("Enable");
   const [error, setError] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -50,8 +50,10 @@ const AdminDiscount = () => {
         startDate: newStartDate,
         endDate: newEndDate,
         status: newStatus,
-        productTypeID: { productTypeID: parseInt(inputProductTypeId) }, // Assuming this is the correct structure
+        productTypeID: { productTypeID: parseInt(inputProductTypeId) }, // Include Product Type ID
       };
+
+      console.log("Creating discount with data:", body); // Log thông tin của body
 
       const response = await fetch("http://localhost:8080/api/v1/admin/discount", {
         method: "POST",
@@ -63,15 +65,19 @@ const AdminDiscount = () => {
         body: JSON.stringify(body),
       });
 
+      console.log("Response status:", response.status); // Log mã trạng thái của phản hồi
       if (response.ok) {
         const createdDiscount = await response.json();
+        console.log("Created discount:", createdDiscount); // Log thông tin khuyến mãi vừa tạo
         setDiscounts((prevDiscounts) => [...prevDiscounts, createdDiscount]);
         resetForm();
       } else {
         const errorData = await response.json();
+        console.error("Error creating discount:", errorData); // Log lỗi nếu có
         setError(errorData.message || "Không thể tạo khuyến mãi.");
       }
     } catch (err) {
+      console.error("Unexpected error:", err); // Log lỗi không mong muốn
       setError(err.message);
     }
   };
@@ -88,7 +94,7 @@ const AdminDiscount = () => {
         startDate: newStartDate,
         endDate: newEndDate,
         status: newStatus,
-        productTypeID: { productTypeID: parseInt(inputProductTypeId) }, // Assuming this is the correct structure
+        productTypeID: { productTypeID: parseInt(inputProductTypeId) }, // Include Product Type ID
       };
 
       const response = await fetch(`http://localhost:8080/api/v1/admin/discount/${currentDiscountID}`, {
@@ -103,6 +109,7 @@ const AdminDiscount = () => {
 
       if (response.ok) {
         const updatedDiscount = await response.json();
+        console.log("Updated discount data:", updatedDiscount); // Log thông tin khuyến mãi vừa cập nhật
         setDiscounts((prevDiscounts) =>
           prevDiscounts.map((discount) =>
             discount.discountID === currentDiscountID ? updatedDiscount : discount
@@ -118,30 +125,37 @@ const AdminDiscount = () => {
     }
   };
 
-  const handleDelete = async (discountID) => {
+
+  const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/admin/discount/${discountID}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${accesstoken}`,
-        },
-        credentials: "include",
-      });
-  
+      const response = await fetch(
+        `http://localhost:8080/api/v1/admin/discount/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accesstoken}`,
+          },
+          credentials: "include",
+        }
+      );
+
       if (response.ok) {
         setDiscounts((prevDiscounts) =>
           prevDiscounts.map((discount) =>
-            discount.discountID === discountID ? { ...discount, status: 'Disabled' } : discount
+            discount.discountID === id ? { ...discount, status: 'Disable' } : discount
           )
         );
+        
+        // In ra danh sách giảm giá sau khi xóa
+        console.log(JSON.stringify(discounts, null, 2)); // In ra JSON
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Không thể vô hiệu hóa khuyến mãi.");
+        throw new Error("Không thể vô hiệu hóa giảm giá.");
       }
     } catch (err) {
       setError(err.message);
     }
   };
+  
 
   const handleEditClick = (discount) => {
     setNewDiscountPercent(discount.discountPercent);
@@ -157,7 +171,7 @@ const AdminDiscount = () => {
     setNewDiscountPercent("");
     setNewStartDate("");
     setNewEndDate("");
-    setInputProductTypeId("");
+    setInputProductTypeId(""); // Reset Product Type ID
     setNewStatus("Enable");
     setEditMode(false);
     setCurrentDiscountID(null);
@@ -191,17 +205,13 @@ const AdminDiscount = () => {
           value={newEndDate}
           onChange={(e) => setNewEndDate(e.target.value)}
         />
-        {editMode && (
-          <>
-            <label>Product Type ID: </label>
-            <input
-              type="text"
-              value={inputProductTypeId}
-              onChange={(e) => setInputProductTypeId(e.target.value)}
-              placeholder="Nhập ID Product Type..."
-            />
-          </>
-        )}
+        <label>Product Type ID: </label> {/* Added for creating new discount */}
+        <input
+          type="text"
+          value={inputProductTypeId}
+          onChange={(e) => setInputProductTypeId(e.target.value)}
+          placeholder="Nhập ID Product Type..."
+        />
         <label>Trạng Thái: </label>
         <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
           <option value="Enable">Enable</option>
@@ -237,8 +247,8 @@ const AdminDiscount = () => {
                 <td>{discount.status}</td>
                 <td>
                   <button onClick={() => handleEditClick(discount)}>Chỉnh Sửa</button>
-                  <button onClick={() => handleDelete(discount.discountID)}>Vô Hiệu Hóa</button>
-                  </td>
+                  <button onClick={() => handleDelete(discount.discountID)}>Xóa</button>
+                </td>
               </tr>
             ))}
           </tbody>
