@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminBill = () => {
   const [bills, setBills] = useState([]);
@@ -51,7 +53,7 @@ const AdminBill = () => {
       if (response.ok) {
         setBills((prevBills) =>
           prevBills.map((bill) =>
-            bill.billID === id ? { ...bill, status: 'Disabled' } : bill
+            bill.billID === id ? { ...bill, status: 'Disable' } : bill
           )
         );
       } else {
@@ -108,9 +110,16 @@ const AdminBill = () => {
   };
 
   return (
-    <div>
-      <h2>Danh Sách Hóa Đơn</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button> {/* Nút quay lại */}
+<div className="admin-ql-container">
+      <div className="title-container">
+          <img 
+            src={returnIcon} 
+            alt="Quay Lại" 
+            className="return-button" 
+            onClick={handleBackToDashboard} 
+          />
+          <h2>Quản Lý Hóa Đơn</h2>
+        </div>
       {error && <p>{error}</p>}
       {bills.length === 0 ? (
         <p>Không có hóa đơn nào.</p>
@@ -170,7 +179,7 @@ const AdminBill = () => {
                   ) : (
                     <>
                       <button onClick={() => handleUpdateClick(bill.billID)}>
-                        Cập nhật
+                        Chỉnh Sửa
                       </button>
                       <button onClick={() => handleDelete(bill.billID)}>
                         Xóa

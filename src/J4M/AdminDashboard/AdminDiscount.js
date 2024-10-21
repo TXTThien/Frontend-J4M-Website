@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminDiscount = () => {
   const [discounts, setDiscounts] = useState([]);
@@ -182,9 +184,16 @@ const AdminDiscount = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Khuyến Mãi</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
       <h3>{editMode ? "Chỉnh Sửa Khuyến Mãi" : "Thêm Khuyến Mãi Mới"}</h3>
       <div>
         <label>Phần Trăm Khuyến Mãi: </label>

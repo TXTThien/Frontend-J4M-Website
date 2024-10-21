@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
 
 const AdminBanner = () => {
   const [bannerList, setBannerList] = useState([]);
@@ -161,9 +162,17 @@ const AdminBanner = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+
+  <div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Banner</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
 
       <h3>Thêm Banner Mới</h3>
       <div>
@@ -316,7 +325,7 @@ const AdminBanner = () => {
                       >
                         Chỉnh Sửa
                       </button>
-                      <button onClick={() => handleDelete(banner.bannerID)}>Vô Hiệu Hóa</button>
+                      <button onClick={() => handleDelete(banner.bannerID)}>Xóa</button>
                     </>
                   )}
                 </td>

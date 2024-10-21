@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminBillInfo = () => {
   const [billInfos, setBillInfos] = useState([]);
@@ -70,9 +72,17 @@ const AdminBillInfo = () => {
   };
 
   return (
-    <div>
-      <h2>Danh Sách Thông Tin Hóa Đơn</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+<div className="admin-ql-container">
+    <div className="title-container">
+        <img 
+          src={returnIcon} 
+          alt="Quay Lại" 
+          className="return-button" 
+          onClick={handleBackToDashboard} 
+        />
+        <h2>Quản Lý Thông Tin Hóa Đơn </h2>
+      </div>
+    <h2>Danh Sách Bill Info</h2>
       {loading && <p>Đang tải thông tin hóa đơn...</p>} {/* Loading indicator */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {billInfos.length === 0 && !loading ? ( // Check loading state

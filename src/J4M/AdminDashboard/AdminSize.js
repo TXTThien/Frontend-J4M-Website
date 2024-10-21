@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
 
 const AdminSize = () => {
   const [sizeList, setSizeList] = useState([]);
@@ -128,13 +129,20 @@ const AdminSize = () => {
   };
 
   return (
-    <div>
-      <h2>Quản Lý Kích Thước</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
+      <h2>Quản Lý Loại Kích Thước</h2>
+    </div>
 
-      <h3>Thêm Kích Thước Mới</h3>
+      <h3>Thêm Loại Kích Thước Mới</h3>
       <div>
-        <label>Tên Kích Thước: </label>
+        <label>Tên Loại Kích Thước: </label>
         <input
           value={newSize.sizeName}
           onChange={(e) =>
@@ -164,13 +172,13 @@ const AdminSize = () => {
 
       {error && <p>{error}</p>}
       {sizeList.length === 0 ? (
-        <p>Không có kích thước nào.</p>
+        <p>Không có loại kích thước nào.</p>
       ) : (
         <table border="1" cellPadding="10" cellSpacing="0">
           <thead>
             <tr>
-              <th>ID Kích Thước</th>
-              <th>Tên Kích Thước</th>
+              <th>ID Loạik Kích Thước</th>
+              <th>Tên Loại Kích Thước</th>
               <th>Bonus</th>
               <th>Trạng Thái</th>
               <th>Thao Tác</th>
@@ -261,10 +269,10 @@ const AdminSize = () => {
                       <button
                         onClick={() => setEditingSizeId(size.sizeID)}
                       >
-                        Sửa
+                        Chỉnh Sửa
                       </button>
                       <button onClick={() => handleDelete(size.sizeID)}>
-                        Vô Hiệu Hóa
+                        Xóa
                       </button>
                     </>
                   )}

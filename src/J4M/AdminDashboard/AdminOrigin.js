@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminOrigin = () => {
   const [originList, setOriginList] = useState([]);
@@ -129,9 +131,16 @@ const AdminOrigin = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Nguồn Gốc</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
       <h3>Thêm Nguồn Gốc Mới</h3>
       <div>
         <label>Quốc Gia: </label>
@@ -228,7 +237,7 @@ const AdminOrigin = () => {
                   ) : (
                     <>
                       <button onClick={() => setEditingOriginId(origin.originID)}>
-                        Sửa
+                        Chỉnh Sửa
                       </button>
                       <button onClick={() => handleDelete(origin.originID)}>Xóa</button>
                     </>

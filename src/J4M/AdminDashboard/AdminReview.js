@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminReview = () => {
   const [reviewList, setReviewList] = useState([]);
@@ -154,7 +156,11 @@ const AdminReview = () => {
         <span
           key={i}
           onClick={() => onClick(i)}
-          style={{ color: i <= rating ? 'gold' : 'lightgray', cursor: 'pointer' }}
+          style={{
+            color: i <= rating ? 'gold' : 'lightgray',
+            cursor: 'pointer',
+            fontSize: '40px', 
+          }}
         >
           ★
         </span>
@@ -164,10 +170,16 @@ const AdminReview = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Đánh Giá</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
-
+    </div>
       <h3>Thêm Đánh Giá Mới</h3>
       <div>
         <label>Bình luận: </label>
@@ -311,7 +323,7 @@ const AdminReview = () => {
                   ) : (
                     <>
                       <button onClick={() => setEditingReviewId(review.reviewID)}>
-                        Sửa
+                        Chỉnh Sửa
                       </button>
                       <button onClick={() => handleDelete(review.reviewID)}>
                         Xóa

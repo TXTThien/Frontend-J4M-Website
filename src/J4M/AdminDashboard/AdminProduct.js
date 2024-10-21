@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
 
 const AdminProduct = () => {
   const [products, setProducts] = useState([]);
@@ -78,6 +79,9 @@ const AdminProduct = () => {
 
   const handleSave = async (id) => {
     try {
+      console.log("Saving product with ID:", id);
+      console.log("Product data:", newProduct); // Log dữ liệu sản phẩm
+  
       const response = await fetch(`http://localhost:8080/api/v1/admin/product/${id}`, {
         method: "PUT",
         headers: {
@@ -87,75 +91,79 @@ const AdminProduct = () => {
         credentials: "include",
         body: JSON.stringify(newProduct),
       });
-
-      if (response.ok) {
-        const updatedProduct = await response.json();
-        setProducts((prevProducts) =>
-          prevProducts.map((product) =>
-            product.productID === id ? updatedProduct : product
-          )
-        );
-        setEditingProductId(null);
-        setNewProduct({
-          productID: "",
-          avatar: "",
-          title: "",
-          description: "",
-          price: "",
-          material: "",
-          productType: { productTypeID: "" },
-          brandID: { brandID: "" },
-          originID: { originID: "" },
-          status: "Enable",
-        }); // Reset input fields
-      } else {
+  
+      if (!response.ok) {
+        const errorResponse = await response.json(); // Log lỗi trả về từ API
+        console.error("Error response:", errorResponse);
         throw new Error("Không thể cập nhật sản phẩm.");
       }
+  
+      const updatedProduct = await response.json();
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.productID === id ? updatedProduct : product
+        )
+      );
+      setEditingProductId(null);
+      setNewProduct({
+        productID: "",
+        avatar: "",
+        title: "",
+        description: "",
+        price: "",
+        material: "",
+        productType: { productTypeID: "" },
+        brandID: { brandID: "" },
+        originID: { originID: "" },
+        status: "Enable",
+      });
     } catch (err) {
       setError(err.message);
     }
   };
+  
 
   const handleCreate = async () => {
     // Kiểm tra các trường nhập
-    if (!newProduct.title || !newProduct.price || !newProduct.material) {
-      setError("Vui lòng điền đủ các trường cần thiết.");
-      return;
+    if (!newProduct.title || !newProduct.price || !newProduct.material || !newProduct.avatar || !newProduct.productType.productTypeID || !newProduct.brandID.brandID || !newProduct.originID.originID) {
+        setError("Vui lòng điền đủ các trường cần thiết.");
+        return;
     }
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/admin/product", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accesstoken}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(newProduct),
-      });
+        const response = await fetch("http://localhost:8080/api/v1/admin/product", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accesstoken}`,
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(newProduct),
+        });
 
-      if (response.ok) {
-        const createdProduct = await response.json();
-        setProducts([...products, createdProduct]);
-        setNewProduct({
-          productID: "",
-          avatar: "",
-          title: "",
-          description: "",
-          price: "",
-          material: "",
-          productType: { productTypeID: "" },
-          brandID: { brandID: "" },
-          originID: { originID: "" },
-          status: "Enable",
-        }); // Reset input fields
-      } else {
-        throw new Error("Không thể tạo sản phẩm.");
-      }
+        if (response.ok) {
+            const createdProduct = await response.json();
+            setProducts([...products, createdProduct]);
+            setNewProduct({
+                productID: "",
+                avatar: "",
+                title: "",
+                description: "",
+                price: "",
+                material: "",
+                productType: { productTypeID: "" },
+                brandID: { brandID: "" },
+                originID: { originID: "" },
+                status: "Enable",
+            }); // Reset input fields
+        } else {
+            throw new Error("Không thể tạo sản phẩm.");
+        }
     } catch (err) {
-      setError(err.message);
+        setError(err.message);
     }
-  };
+};
+
 
   const handleEdit = (product) => {
     setEditingProductId(product.productID);
@@ -167,11 +175,24 @@ const AdminProduct = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Sản Phẩm</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
       <h3>Thêm Sản Phẩm Mới</h3>
       <div>
+        <label >Avatar: </label>
+        <input
+            type="text"
+            value={newProduct.avatar}
+            onChange={(e) => setNewProduct({ ...newProduct, avatar: e.target.value })}
+        />
         <label>Tên sản phẩm: </label>
         <input
           type="text"
@@ -184,11 +205,29 @@ const AdminProduct = () => {
           value={newProduct.description}
           onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
         />
+        <label>Loại Sản Phẩm ID: </label>
+        <input
+            type="text"
+            value={newProduct.productType.productTypeID}
+            onChange={(e) => setNewProduct({ ...newProduct, productType: { productTypeID: e.target.value } })}
+        />
         <label>Giá: </label>
         <input
           type="number"
           value={newProduct.price}
           onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+        />
+        <label>Thương Hiệu ID: </label>
+        <input
+            type="text"
+            value={newProduct.brandID.brandID}
+            onChange={(e) => setNewProduct({ ...newProduct, brandID: { brandID: e.target.value } })}
+        />
+        <label>Xuất Xứ ID: </label>
+        <input
+            type="text"
+            value={newProduct.originID.originID}
+            onChange={(e) => setNewProduct({ ...newProduct, originID: { originID: e.target.value } })}
         />
         <label>Chất liệu: </label>
         <input
@@ -268,6 +307,8 @@ const AdminProduct = () => {
                   {editingProductId === product.productID ? (
                     <input
                       type="text"
+                      style={{ width: '70px' }} // Điều chỉnh kích thước tại đây
+
                       value={newProduct.productType.productTypeID}
                       onChange={(e) => setNewProduct({ ...newProduct, productType: { productTypeID: e.target.value } })}
                     />
@@ -279,6 +320,7 @@ const AdminProduct = () => {
                   {editingProductId === product.productID ? (
                     <input
                       type="number"
+                      style={{ width: '150px' }} // Điều chỉnh kích thước tại đây
                       value={newProduct.price}
                       onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                     />
@@ -291,6 +333,8 @@ const AdminProduct = () => {
                     <input
                       type="text"
                       value={newProduct.brandID.brandID}
+                      style={{ width: '70px' }} // Điều chỉnh kích thước tại đây
+
                       onChange={(e) => setNewProduct({ ...newProduct, brandID: { brandID: e.target.value } })}
                     />
                   ) : (
@@ -302,6 +346,8 @@ const AdminProduct = () => {
                     <input
                       type="text"
                       value={newProduct.originID.originID}
+                      style={{ width: '70px' }} // Điều chỉnh kích thước tại đây
+
                       onChange={(e) => setNewProduct({ ...newProduct, originID: { originID: e.target.value } })}
                     />
                   ) : (
@@ -340,7 +386,7 @@ const AdminProduct = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEdit(product)}>Sửa</button>
+                      <button onClick={() => handleEdit(product)}>Chỉnh Sửa</button>
                       <button onClick={() => handleDelete(product.productID)}>Xóa</button>
                     </>
                   )}

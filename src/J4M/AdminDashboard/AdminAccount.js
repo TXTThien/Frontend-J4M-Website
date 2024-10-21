@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
 
 const AdminAccount = () => {
   const [accounts, setAccounts] = useState([]);
@@ -58,7 +59,7 @@ const AdminAccount = () => {
       if (response.ok) {
         setAccounts((prevAccounts) => 
           prevAccounts.map((account) =>
-            account.accountID === accountID ? { ...account, status: 'Disabled' } : account
+            account.accountID === accountID ? { ...account, status: 'Disable' } : account
           )
         );
       } else {
@@ -187,10 +188,16 @@ const AdminAccount = () => {
   };
 
   return (
-    <div>
-      <h2>Quản Lý Tài Khoản</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
-
+<div className="admin-ql-container">
+  <div className="title-container">
+    <img 
+      src={returnIcon} 
+      alt="Quay Lại" 
+      className="return-button" 
+      onClick={handleBackToDashboard} 
+    />
+    <h2>Quản Lý Tài Khoản</h2>
+  </div>
       <h3>Tạo Tài Khoản Mới</h3>
       <div>
         <label>Tên: </label>

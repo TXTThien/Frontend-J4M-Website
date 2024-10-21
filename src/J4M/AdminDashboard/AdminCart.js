@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminCart = () => {
   const [carts, setCarts] = useState([]);
@@ -166,9 +168,16 @@ const AdminCart = () => {
   };
 
   return (
-    <div>
-      <h2>Danh Sách Giỏ Hàng</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
+      <h2>Quản Lý Giỏ Hàng</h2>
+    </div>      
 
       <h3>Thêm Giỏ Hàng Mới</h3>
       <div>
@@ -304,16 +313,16 @@ const AdminCart = () => {
                     <button
                       onClick={() => handleSave(cart.cartID, cart)}
                     >
-                      Save
+                      Lưu
                     </button>
                   ) : (
                     <button
                       onClick={() => setEditingCartId(cart.cartID)}
                     >
-                      Edit
+                      Chỉnh Sửa
                     </button>
                   )}
-                  <button onClick={() => handleDelete(cart.cartID)}>Disable</button>
+                  <button onClick={() => handleDelete(cart.cartID)}>Xóa</button>
                 </td>
               </tr>
             ))}

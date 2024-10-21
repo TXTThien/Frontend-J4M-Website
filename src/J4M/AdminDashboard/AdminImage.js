@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminImage = () => {
   const [images, setImages] = useState([]);
@@ -122,9 +124,16 @@ const AdminImage = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Hình Ảnh Sản Phẩm</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
       <h3>Thêm Hình Ảnh Mới</h3>
       <div>
         <label>URL Hình Ảnh: </label>
@@ -231,7 +240,7 @@ const AdminImage = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => setEditingImageId(image.imageID)}>Sửa</button>
+                      <button onClick={() => setEditingImageId(image.imageID)}>Chỉnh Sửa</button>
                       <button onClick={() => handleDelete(image.imageID)}>Xóa</button>
                     </>
                   )}
