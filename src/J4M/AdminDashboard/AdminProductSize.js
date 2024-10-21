@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
 
 const AdminProductSize = () => {
   const [productSizes, setProductSizes] = useState([]);
@@ -137,9 +138,16 @@ const AdminProductSize = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Kích Thước Sản Phẩm</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
       <h3>Thêm Kích Thước Sản Phẩm Mới</h3>
       <div>
         <label>ID Sản Phẩm: </label>
@@ -276,7 +284,7 @@ const AdminProductSize = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => setEditingProductSizeId(size.productSizeID)}>Sửa</button>
+                      <button onClick={() => setEditingProductSizeId(size.productSizeID)}>Chỉnh Sửa</button>
                       <button onClick={() => handleDelete(size.productSizeID)}>Xóa</button>
                     </>
                   )}

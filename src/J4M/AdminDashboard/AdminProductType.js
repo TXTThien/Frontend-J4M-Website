@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
 
 const AdminProductType = () => {
   const [productTypes, setProductTypes] = useState([]);
@@ -133,9 +134,16 @@ const AdminProductType = () => {
   };
 
   return (
-    <div>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
       <h2>Quản Lý Loại Sản Phẩm</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
+    </div>
       <h3>Thêm Loại Sản Phẩm Mới</h3>
       <div>
         <label>Tên Loại Sản Phẩm: </label>
@@ -246,7 +254,7 @@ const AdminProductType = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => setEditingProductTypeId(type.productTypeID)}>Sửa</button>
+                      <button onClick={() => setEditingProductTypeId(type.productTypeID)}>Chỉnh Sửa</button>
                       <button onClick={() => handleDelete(type.productTypeID)}>Xóa</button>
                     </>
                   )}

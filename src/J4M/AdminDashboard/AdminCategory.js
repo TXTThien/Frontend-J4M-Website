@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import returnIcon from './ImageDashboard/return-button.png'; 
+
 
 const AdminCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -114,12 +116,19 @@ const AdminCategory = () => {
   };
 
   return (
-    <div>
-      <h2>Quản Lý Loại Sản Phẩm</h2>
-      <button onClick={handleBackToDashboard}>Quay Lại</button>
-      <h3>Thêm Loại Sản Phẩm Mới</h3>
+<div className="admin-ql-container">
+<div className="title-container">
+      <img 
+        src={returnIcon} 
+        alt="Quay Lại" 
+        className="return-button" 
+        onClick={handleBackToDashboard} 
+      />
+      <h2>Quản Lý Danh Mục Sản Phẩm</h2>
+    </div>
+      <h3>Thêm Danh Mục Sản Phẩm Mới</h3>
       <div>
-        <label>Tên Loại Sản Phẩm: </label>
+        <label>Tên Danh Mục Sản Phẩm: </label>
         <input
           value={newCategoryName}
           onChange={(e) => setNewCategoryName(e.target.value)}
@@ -129,13 +138,13 @@ const AdminCategory = () => {
 
       {error && <p>{error}</p>}
       {categories.length === 0 ? (
-        <p>Không có loại sản phẩm nào.</p>
+        <p>Không có danh mục sản phẩm nào.</p>
       ) : (
         <table border="1" cellPadding="10" cellSpacing="0">
           <thead>
             <tr>
-              <th>ID Loại Sản Phẩm</th>
-              <th>Tên Loại Sản Phẩm</th>
+              <th>ID Danh Mục Sản Phẩm</th>
+              <th>Tên Danh Mục Sản Phẩm</th>
               <th>Trạng Thái</th>
               <th>Hành động</th>
             </tr>
@@ -191,7 +200,7 @@ const AdminCategory = () => {
                     </>
                   ) : (
                     <>
-                      <button onClick={() => setEditingCategoryId(category.categoryID)}>Sửa</button>
+                      <button onClick={() => setEditingCategoryId(category.categoryID)}>Chỉnh Sửa</button>
                       <button onClick={() => handleDelete(category.categoryID)}>Xóa</button>
                     </>
                   )}
