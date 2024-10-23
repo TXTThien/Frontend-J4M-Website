@@ -22,6 +22,10 @@ import AdminDiscount from './J4M/AdminDashboard/AdminDiscount';
 import AdminImage from './J4M/AdminDashboard/AdminImage';
 import AdminProductSize from './J4M/AdminDashboard/AdminProductSize';
 import AdminProductType from './J4M/AdminDashboard/AdminProductType';
+import AccountLayout from './J4M/UserAccount/AccountLayout';
+import Profile from './J4M/UserAccount/Profile';
+import ChangePassword from './J4M/UserAccount/ChangePassword';
+import PurchaseHistory from './J4M/UserAccount/PurchaseHistory';
 
 
 
@@ -54,13 +58,11 @@ const App = () => {
         <Route path="/AdminProductSize" element={<AdminProductSize/>} />
         <Route path="/AdminProductType" element={<AdminProductType/>} />
 
-
-
-
-
-
-
-
+        <Route path="/account" element={<AccountLayout />}>
+          <Route path="profile" element={<Profile />} />
+          <Route path="changepassword" element={<ChangePassword />} />
+          <Route path="orders" element={<PurchaseHistory/>}/>
+        </Route>
 
 
 
