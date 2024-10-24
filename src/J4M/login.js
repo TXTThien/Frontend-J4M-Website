@@ -39,37 +39,47 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Đăng Nhập</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Tên người dùng:</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+      <div style={{ border: "1px solid #ccc", padding: "20px", borderRadius: "8px", boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)", width: "300px", backgroundColor: "#f9f9f9" }}>
+        <h2 style={{ textAlign: "center", marginBottom: "20px", fontSize: "24px", color: "#333" }}>Đăng Nhập</h2>
+        <form onSubmit={handleLogin}>
+          <div style={{ marginBottom: "15px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>Tên người dùng:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+            />
+          </div>
+          <div style={{ marginBottom: "15px" }}>
+            <label style={{ display: "block", marginBottom: "5px" }}>Mật khẩu:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+            />
+          </div>
+          <button type="submit" style={{ width: "100%", padding: "10px", backgroundColor: "#007BFF", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+            Đăng Nhập
+          </button>
+          {error && <p style={{ color: 'red', marginTop: "10px", textAlign: "center" }}>{error}</p>}
+        </form>
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <h3 style={{ marginBottom: "10px" }}>Quên mật khẩu?</h3>
+          <button onClick={handleForgotPassword} style={{ backgroundColor: "transparent", border: "none", color: "#007BFF", cursor: "pointer" }}>
+            Nhấn vào đây
+          </button>
         </div>
-        <div>
-          <label>Mật khẩu:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <h3 style={{ marginBottom: "10px" }}>Chưa có tài khoản?</h3>
+          <button onClick={handleSignUp} style={{ backgroundColor: "transparent", border: "none", color: "#007BFF", cursor: "pointer" }}>
+            Đăng Ký
+          </button>
         </div>
-        <button type="submit">Đăng Nhập</button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
-      <div>
-        <h3>Quên mật khẩu?</h3>
-        <button onClick={handleForgotPassword}>Nhấn vào đây</button>
-      </div>
-      <div>
-        <h3>Chưa có tài khoản?</h3>
-        <button onClick={handleSignUp}>Đăng Ký</button>
       </div>
     </div>
   );

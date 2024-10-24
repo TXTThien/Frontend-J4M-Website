@@ -36,14 +36,20 @@ const Dashboard = () => {
       })
       .then(response => response.json())
       .then(data => {
-        setAccountInfo(data);
+        if (data.role === 'admin') {
+          setAccountInfo(data);
+        } else {
+          navigate('/error');
+        }
       })
       .catch(error => {
         setError("Có lỗi xảy ra khi lấy thông tin tài khoản.");
         console.error(error);
       });
+    } else {
+      navigate('/login');
     }
-  }, [accountID, accesstoken]);
+  }, [accountID, accesstoken, navigate]);
 
   const handleLogout = () => {
     fetch('http://localhost:8080/api/v1/auth/logout', {
