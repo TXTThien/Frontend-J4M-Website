@@ -74,7 +74,7 @@ const AdminProduct = () => {
 
       const data = await response.json();
       if (response.ok) {
-        setImageUrl(data.DT); // Lưu link URL trả về
+        setImageUrl(data.DT); 
         setNewProduct({ ...newProduct, avatar: data.DT });
         console.log("Tải lên thành công:", data.DT);
       } else {
