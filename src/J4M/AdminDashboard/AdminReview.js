@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Pie } from "react-chartjs-2"; // Nhập biểu đồ tròn
 import returnIcon from './ImageDashboard/return-button.png'; 
-
 
 const AdminReview = () => {
   const [reviewList, setReviewList] = useState([]);
@@ -9,8 +9,8 @@ const AdminReview = () => {
     comment: "",
     rating: null,
     status: "Enable",
-    accountID: { accountID: "" }, // Đổi thành đối tượng với thuộc tính accountID
-    productID: null, // Mặc định là null
+    accountID: { accountID: "" },
+    productID: null,
   });
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [error, setError] = useState(null);
@@ -43,6 +43,27 @@ const AdminReview = () => {
 
     fetchReviews();
   }, [accesstoken]);
+
+  // Tính toán dữ liệu cho biểu đồ tròn
+  const getChartData = () => {
+    const ratingCounts = [0, 0, 0, 0, 0]; // Đếm số lượng đánh giá cho mỗi sao (1-5 sao)
+    reviewList.forEach((review) => {
+      if (review.rating) {
+        ratingCounts[review.rating - 1] += 1; // Tăng số lượng theo số sao
+      }
+    });
+
+    return {
+      labels: ['1 sao', '2 sao', '3 sao', '4 sao', '5 sao'],
+      datasets: [
+        {
+          data: ratingCounts,
+          backgroundColor: ['red', 'orange', 'yellow', 'lightgreen', 'green'],
+          hoverBackgroundColor: ['darkred', 'darkorange', 'gold', 'darkgreen', 'darkgreen'],
+        },
+      ],
+    };
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -104,18 +125,16 @@ const AdminReview = () => {
 
   const handleCreate = async () => {
     try {
-      // Chỉnh sửa cấu trúc dữ liệu để phù hợp với yêu cầu
       const reviewData = {
         comment: newReview.comment,
         rating: newReview.rating,
         status: newReview.status,
         accountID: {
-          accountID: newReview.accountID.accountID, // Lấy giá trị từ đối tượng
+          accountID: newReview.accountID.accountID,
         },
         productID: newReview.productID,
       };
   
-      console.log("Dữ liệu sẽ được gửi:", JSON.stringify(reviewData, null, 2)); // In ra dữ liệu JSON
       const response = await fetch("http://localhost:8080/api/v1/admin/review", {
         method: "POST",
         headers: {
@@ -133,7 +152,7 @@ const AdminReview = () => {
           comment: "",
           rating: null,
           status: "Enable",
-          accountID: { accountID: "" }, // Reset lại thành đối tượng
+          accountID: { accountID: "" },
           productID: null,
         });
       } else {
@@ -170,16 +189,17 @@ const AdminReview = () => {
   };
 
   return (
-<div className="admin-ql-container">
-<div className="title-container">
-      <img 
-        src={returnIcon} 
-        alt="Quay Lại" 
-        className="return-button" 
-        onClick={handleBackToDashboard} 
-      />
-      <h2>Quản Lý Đánh Giá</h2>
-    </div>
+    <div className="admin-ql-container">
+      <div className="title-container">
+        <img 
+          src={returnIcon} 
+          alt="Quay Lại" 
+          className="return-button" 
+          onClick={handleBackToDashboard} 
+        />
+        <h2>Quản Lý Đánh Giá</h2>
+      </div>
+
       <h3>Thêm Đánh Giá Mới</h3>
       <div>
         <label>Bình luận: </label>
@@ -192,11 +212,11 @@ const AdminReview = () => {
         <label>ID Tài Khoản: </label>
         <input
           type="number"
-          value={newReview.accountID.accountID} // Sử dụng accountID từ đối tượng
+          value={newReview.accountID.accountID} 
           onChange={(e) =>
             setNewReview((prev) => ({
               ...prev,
-              accountID: { accountID: e.target.value }, // Đặt giá trị vào đối tượng
+              accountID: { accountID: e.target.value },
             }))
           }
         />
@@ -221,120 +241,121 @@ const AdminReview = () => {
       {reviewList.length === 0 ? (
         <p>Không có đánh giá nào.</p>
       ) : (
-        <table border="1" cellPadding="10" cellSpacing="0">
-          <thead>
-            <tr>
-              <th>ID Đánh Giá</th>
-              <th>ID Tài Khoản</th>
-              <th>Tên Tài Khoản</th>
-              <th>Bình luận</th>
-              <th>Đánh Giá</th>
-              <th>Trạng Thái</th>
-              <th>Thao Tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reviewList.map((review) => (
-              <tr key={review.reviewID}>
-                <td>{review.reviewID}</td>
-                <td>
-                  {editingReviewId === review.reviewID ? (
-                    <input
-                      type="number"
-                      value={review.accountID.accountID} 
-                      onChange={(e) =>
-                        setReviewList((prevReviewList) =>
-                          prevReviewList.map((r) =>
+        <div>
+          <h3>Thống Kê Đánh Giá</h3>
+          <table border="1" cellPadding="10" cellSpacing="0">
+            <thead>
+              <tr>
+                <th>ID Đánh Giá</th>
+                <th>ID Tài Khoản</th>
+                <th>Tên Tài Khoản</th>
+                <th>Bình luận</th>
+                <th>Đánh Giá</th>
+                <th>Ngày tạo</th>
+                <th>Trạng Thái</th>
+                <th>Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviewList.map((review) => (
+                <tr key={review.reviewID}>
+                  <td>{review.reviewID}</td>
+                  <td>
+                    {editingReviewId === review.reviewID ? (
+                      <input
+                        type="number"
+                        value={review.accountID.accountID} 
+                        onChange={(e) =>
+                          setReviewList((prev) =>
+                            prev.map((r) =>
+                              r.reviewID === review.reviewID
+                                ? {
+                                    ...r,
+                                    accountID: { accountID: e.target.value },
+                                  }
+                                : r
+                            )
+                          )
+                        }
+                      />
+                    ) : (
+                      review.accountID.accountID
+                    )}
+                  </td>
+                  <td>{review.accountName}</td>
+                  <td>
+                    {editingReviewId === review.reviewID ? (
+                      <input
+                        value={review.comment}
+                        onChange={(e) =>
+                          setReviewList((prev) =>
+                            prev.map((r) =>
+                              r.reviewID === review.reviewID
+                                ? { ...r, comment: e.target.value }
+                                : r
+                            )
+                          )
+                        }
+                      />
+                    ) : (
+                      review.comment
+                    )}
+                  </td>
+                  <td>
+                    {editingReviewId === review.reviewID ? (
+                      renderStars(review.rating, (rating) =>
+                        setReviewList((prev) =>
+                          prev.map((r) =>
                             r.reviewID === review.reviewID
-                              ? { ...r, accountID: { accountID: e.target.value } }
+                              ? { ...r, rating }
                               : r
                           )
-                        )
-                      }
-                    />
-                  ) : (
-                    review.accountID.accountID
-                  )}
-                </td>
-                <td>{review.accountID.name}</td>
-                <td>
-                  {editingReviewId === review.reviewID ? (
-                    <input
-                      value={review.comment}
-                      onChange={(e) =>
-                        setReviewList((prevReviewList) =>
-                          prevReviewList.map((r) =>
-                            r.reviewID === review.reviewID
-                              ? { ...r, comment: e.target.value }
-                              : r
-                          )
-                        )
-                      }
-                    />
-                  ) : (
-                    review.comment
-                  )}
-                </td>
-                <td>
-                  {editingReviewId === review.reviewID ? (
-                    renderStars(review.rating || 0, (rating) =>
-                      setReviewList((prevReviewList) =>
-                        prevReviewList.map((r) =>
-                          r.reviewID === review.reviewID
-                            ? { ...r, rating }
-                            : r
                         )
                       )
-                    )
-                  ) : (
-                    renderStars(review.rating)
-                  )}
-                </td>
-                <td>
-                  {editingReviewId === review.reviewID ? (
-                    <select
-                      value={review.status}
-                      onChange={(e) =>
-                        setReviewList((prevReviewList) =>
-                          prevReviewList.map((r) =>
-                            r.reviewID === review.reviewID
-                              ? { ...r, status: e.target.value }
-                              : r
+                    ) : (
+                      renderStars(review.rating)
+                    )}
+                  </td>
+                  <td>{review.date ? new Date(review.date).toLocaleDateString("en-GB") : ""}</td>
+                  <td>
+                    {editingReviewId === review.reviewID ? (
+                      <select
+                        value={review.status}
+                        onChange={(e) =>
+                          setReviewList((prev) =>
+                            prev.map((r) =>
+                              r.reviewID === review.reviewID
+                                ? { ...r, status: e.target.value }
+                                : r
+                            )
                           )
-                        )
-                      }
-                    >
-                      <option value="Enable">Enable</option>
-                      <option value="Disable">Disable</option>
-                    </select>
-                  ) : (
-                    review.status
-                  )}
-                </td>
-                <td>
-                  {editingReviewId === review.reviewID ? (
-                    <button
-                      onClick={() => {
-                        handleSave(review.reviewID, review);
-                      }}
-                    >
-                      Lưu
-                    </button>
-                  ) : (
-                    <>
-                      <button onClick={() => setEditingReviewId(review.reviewID)}>
-                        Chỉnh Sửa
-                      </button>
-                      <button onClick={() => handleDelete(review.reviewID)}>
-                        Xóa
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                        }
+                      >
+                        <option value="Enable">Enable</option>
+                        <option value="Disable">Disable</option>
+                      </select>
+                    ) : (
+                      review.status
+                    )}
+                  </td>
+                  <td>
+                    {editingReviewId === review.reviewID ? (
+                      <>
+                        <button onClick={() => handleSave(review.reviewID, review)}>Lưu</button>
+                        <button onClick={() => setEditingReviewId(null)}>Hủy</button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => setEditingReviewId(review.reviewID)}>Sửa</button>
+                        <button onClick={() => handleDelete(review.reviewID)}>Xóa</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

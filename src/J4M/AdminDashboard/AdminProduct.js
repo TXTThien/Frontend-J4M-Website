@@ -4,6 +4,8 @@ import returnIcon from './ImageDashboard/return-button.png';
 
 const AdminProduct = () => {
   const [products, setProducts] = useState([]);
+  const [file, setFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [editingProductId, setEditingProductId] = useState(null);
   const [newProduct, setNewProduct] = useState({
     productID: "",
@@ -50,7 +52,36 @@ const AdminProduct = () => {
 
     fetchProducts();
   }, [accesstoken]);
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
+  const handleUploadImage = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+        },
+        credentials: "include",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setImageUrl(data.DT); // Lưu link URL trả về
+        console.log("Tải lên thành công:", data.DT);
+      } else {
+        console.error("Lỗi khi tải lên:", data.EM);
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải lên:", err.message);
+    }
+  };
   const handleDelete = async (id) => {
     try {
       const response = await fetch(`http://localhost:8080/api/v1/admin/product/${id}`, {
