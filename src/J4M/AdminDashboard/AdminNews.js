@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import returnIcon from './ImageDashboard/return-button.png'; 
 
-
 const AdminNews = () => {
   const [newsList, setNewsList] = useState([]);
   const [editingNewsId, setEditingNewsId] = useState(null); 
@@ -135,16 +134,16 @@ const AdminNews = () => {
   };
 
   return (
-<div className="admin-ql-container">
-<div className="title-container">
-      <img 
-        src={returnIcon} 
-        alt="Quay Lại" 
-        className="return-button" 
-        onClick={handleBackToDashboard} 
-      />
-      <h2>Quản Lý Tin Tức</h2>
-    </div>
+    <div className="admin-ql-container">
+      <div className="title-container">
+        <img 
+          src={returnIcon} 
+          alt="Quay Lại" 
+          className="return-button" 
+          onClick={handleBackToDashboard} 
+        />
+        <h2>Quản Lý Tin Tức</h2>
+      </div>
       <h3>Thêm Tin Tức Mới</h3>
       <div>
         <label>Tiêu Đề Tin Tức: </label>
@@ -192,6 +191,7 @@ const AdminNews = () => {
               <th>Tiêu Đề</th>
               <th>Hình Ảnh (URL)</th>
               <th>Nội Dung</th>
+              <th>Ngày Tạo</th> 
               <th>Trạng Thái</th>
               <th>Hành động</th>
             </tr>
@@ -200,8 +200,7 @@ const AdminNews = () => {
             {newsList.map((news) => (
               <tr key={news.newsID}>
                 <td>{news.newsID}</td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{editingNewsId === news.newsID ? (
                     <input
                       value={news.newsTitle}
                       onChange={(e) =>
@@ -218,8 +217,7 @@ const AdminNews = () => {
                     news.newsTitle
                   )}
                 </td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{editingNewsId === news.newsID ? (
                     <input
                       value={news.newsImage}
                       onChange={(e) =>
@@ -236,8 +234,7 @@ const AdminNews = () => {
                     news.newsImage
                   )}
                 </td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{editingNewsId === news.newsID ? (
                     <textarea
                       value={news.content}
                       onChange={(e) =>
@@ -254,8 +251,8 @@ const AdminNews = () => {
                     news.content
                   )}
                 </td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{news.date ? new Date(news.date).toLocaleDateString("en-GB") : ""}</td>
+                <td>{editingNewsId === news.newsID ? (
                     <select
                       value={news.status}
                       onChange={(e) =>

@@ -4,6 +4,8 @@ import returnIcon from './ImageDashboard/return-button.png';
 
 const AdminProduct = () => {
   const [products, setProducts] = useState([]);
+  const [file, setFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [editingProductId, setEditingProductId] = useState(null);
   const [newProduct, setNewProduct] = useState({
     productID: "",
@@ -42,7 +44,7 @@ const AdminProduct = () => {
         }
 
         const data = await response.json();
-        setProducts(data.products); // Thay đổi theo cấu trúc dữ liệu trả về
+        setProducts(data.products);
       } catch (err) {
         setError(err.message);
       }
@@ -50,6 +52,38 @@ const AdminProduct = () => {
 
     fetchProducts();
   }, [accesstoken]);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUploadImage = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+        },
+        credentials: "include",
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setImageUrl(data.DT); 
+        setNewProduct({ ...newProduct, avatar: data.DT });
+        console.log("Tải lên thành công:", data.DT);
+      } else {
+        console.error("Lỗi khi tải lên:", data.EM);
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải lên:", err.message);
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -124,7 +158,6 @@ const AdminProduct = () => {
   
 
   const handleCreate = async () => {
-    // Kiểm tra các trường nhập
     if (!newProduct.title || !newProduct.price || !newProduct.material || !newProduct.avatar || !newProduct.productType.productTypeID || !newProduct.brandID.brandID || !newProduct.originID.originID) {
         setError("Vui lòng điền đủ các trường cần thiết.");
         return;
@@ -155,14 +188,14 @@ const AdminProduct = () => {
                 brandID: { brandID: "" },
                 originID: { originID: "" },
                 status: "Enable",
-            }); // Reset input fields
+            });
         } else {
             throw new Error("Không thể tạo sản phẩm.");
         }
     } catch (err) {
         setError(err.message);
     }
-};
+  };
 
 
   const handleEdit = (product) => {
@@ -187,12 +220,11 @@ const AdminProduct = () => {
     </div>
       <h3>Thêm Sản Phẩm Mới</h3>
       <div>
-        <label >Avatar: </label>
-        <input
-            type="text"
-            value={newProduct.avatar}
-            onChange={(e) => setNewProduct({ ...newProduct, avatar: e.target.value })}
-        />
+      <label>Avatar: </label>
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUploadImage}>Tải ảnh lên</button>
+        {imageUrl && <img src={imageUrl} alt="Product Avatar" style={{ width: 100 }} />}
+        
         <label>Tên sản phẩm: </label>
         <input
           type="text"
@@ -271,15 +303,16 @@ const AdminProduct = () => {
               <tr key={product.productID}>
                 <td>{product.productID}</td>
                 <td>
-                  {editingProductId === product.productID ? (
-                    <input
-                      type="text"
-                      value={newProduct.avatar}
-                      onChange={(e) => setNewProduct({ ...newProduct, avatar: e.target.value })}
-                    />
-                  ) : (
-                    product.avatar
-                  )}
+                {editingProductId === product.productID ? (
+                <div>
+                  <label>Avatar: </label>
+                  <input type="file" onChange={handleFileChange} />
+                  <button onClick={handleUploadImage}>Tải ảnh lên</button>
+                  {imageUrl && <img src={imageUrl} alt="Product Avatar" style={{ width: 100 }} />}
+                </div>
+              ) : (
+                <img src={product.avatar} alt="Product Avatar" style={{ width: 100 }} />
+              )}
                 </td>
                 <td>
                   {editingProductId === product.productID ? (

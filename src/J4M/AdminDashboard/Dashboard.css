@@ -364,3 +364,82 @@ tr:hover {
     height: auto;
     cursor: pointer;
 }
+.chart-container {
+    width: 80%; /* Kích thước biểu đồ */
+    margin: 0 auto; /* Căn giữa biểu đồ */
+    padding: 20px; /* Khoảng cách bên trong */
+    border: 2px solid #04a52c; /* Đường viền */
+    border-radius: 10px; /* Bo góc */
+    background-color: #f8f9fa; /* Màu nền */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    margin-right: 20px;
+}
+
+.chart-title {
+    text-align: center; /* Căn giữa tiêu đề */
+    font-size: 24px; /* Kích thước chữ tiêu đề */
+    color: #343a40; /* Màu chữ tiêu đề */
+    margin-bottom: 20px; /* Khoảng cách dưới tiêu đề */
+}
+
+.chart {
+    position: relative; /* Để điều chỉnh vị trí của biểu đồ */
+    height: 400px; /* Chiều cao của biểu đồ */
+}
+
+.axis-label {
+    font-size: 14px; /* Kích thước chữ cho nhãn trục */
+    color: #495057; /* Màu chữ cho nhãn trục */
+}
+
+.bar {
+    background-color: #28a745; /* Màu của các cột */
+    border-radius: 5px; /* Bo góc cho các cột */
+    transition: background-color 0.3s ease; /* Hiệu ứng chuyển màu khi hover */
+}
+
+.bar:hover {
+    background-color: #218838; /* Màu cột khi hover */
+}
+
+.legend {
+    display: flex; /* Sắp xếp các mục theo hàng */
+    justify-content: center; /* Căn giữa legend */
+    margin-top: 20px; /* Khoảng cách trên legend */
+}
+
+.legend-item {
+    margin: 0 10px; /* Khoảng cách giữa các mục legend */
+    display: flex; /* Hiển thị flex cho item */
+    align-items: center; /* Căn giữa item theo chiều dọc */
+}
+
+.legend-color {
+    width: 20px; /* Chiều rộng cho màu sắc của legend */
+    height: 20px; /* Chiều cao cho màu sắc của legend */
+    margin-right: 5px; /* Khoảng cách bên phải */
+}
+.pie-chart-container {
+    text-align: center; /* Căn giữa tiêu đề và biểu đồ */
+    margin: 20px; /* Khoảng cách bên ngoài */
+  }
+  
+  .pie-chart {
+    width: 200px; /* Kích thước chiều rộng của biểu đồ */
+    height: 200px; /* Kích thước chiều cao của biểu đồ */
+    margin: 0 auto; /* Căn giữa biểu đồ */
+    position: relative; /* Để có thể điều chỉnh vị trí các thành phần khác bên trong */
+  }
+  
+  .pie-chart h2 {
+    font-size: 1.5rem; /* Kích thước font tiêu đề */
+    margin-bottom: 10px; /* Khoảng cách giữa tiêu đề và biểu đồ */
+    color: #333; /* Màu sắc tiêu đề */
+  }
+  
+  /* Thêm kiểu dáng cho biểu đồ Pie nếu cần */
+  .pie-chart canvas {
+    border: 2px solid #ddd; /* Đường viền cho biểu đồ */
+    border-radius: 10px; /* Bo góc biểu đồ */
+  }
+  
