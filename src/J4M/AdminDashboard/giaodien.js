@@ -44,7 +44,7 @@ const Dashboard = () => {
         if (data.role === 'admin') {
           setAccountInfo(data);
         } else {
-          navigate('/error');
+          navigate('/Prebuy');
         }
       })
       .catch(error => {
