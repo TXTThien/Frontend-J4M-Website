@@ -73,5 +73,49 @@
   background: white;
   cursor: pointer;
 }
+.dropdown {
+  position: absolute;
+  background-color: #222; /* Màu nền của dropdown */
+  border: 1px solid #444; /* Đường viền của dropdown */
+  z-index: 1000;
+  list-style: none;
+  padding: 0; /* Bỏ padding bên ngoài */
+  margin: 0;
+  display: none; /* Ẩn dropdown mặc định */
+  min-width: 200px; /* Đặt chiều rộng tối thiểu cho dropdown */
+}
 
+.dropdown li {
+  padding: 10px 20px; /* Padding cho các mục trong dropdown */
+  text-align: left; /* Căn trái cho chữ */
+}
 
+.dropdown li a {
+  color: white; /* Màu chữ trong dropdown */
+  text-decoration: none;
+  display: block; /* Đảm bảo các mục chiếm toàn bộ chiều rộng */
+  width: 100%; /* Chiều rộng 100% để các mục chiếm toàn bộ */
+}
+
+.dropdown li a:hover {
+  background-color: #555; /* Màu nền khi hover trong dropdown */
+}
+
+/* Hiện dropdown khi hover vào mục cha */
+.nav-links li:hover .dropdown {
+  display: block; /* Hiện dropdown khi hover */
+}
+.cart-button {
+  position: relative; /* Để định vị số lượng sản phẩm */
+}
+
+.cart-count {
+  position: absolute;
+  top: -5px; /* Điều chỉnh vị trí theo nhu cầu */
+  right: -10px; /* Điều chỉnh vị trí theo nhu cầu */
+  background-color: red; /* Màu nền của số lượng */
+  color: white; /* Màu chữ */
+  border-radius: 50%; /* Hình tròn */
+  padding: 2px 5px; /* Padding cho số lượng */
+  font-size: 12px; /* Kích thước chữ */
+}
