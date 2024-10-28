@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './Component/Home/Home'
 import Login from './J4M/login';
 import Dashboard from './J4M//AdminDashboard/giaodien';
 import Forgot from './J4M/Forgot';
@@ -26,15 +27,15 @@ import AccountLayout from './J4M/UserAccount/AccountLayout';
 import Profile from './J4M/UserAccount/Profile';
 import ChangePassword from './J4M/UserAccount/ChangePassword';
 import PurchaseHistory from './J4M/UserAccount/PurchaseHistory';
-
-
-
-
+import Header from './Component/Header/header';
+import Footer from './Component/Footer/footer';
 
 const App = () => {
   return (
     <Router>
+       <Header /> 
       <Routes>
+        <Route path='/home' element={<Home/>}></Route>
         <Route path="/" element={<J4M />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -63,14 +64,8 @@ const App = () => {
           <Route path="changepassword" element={<ChangePassword />} />
           <Route path="orders" element={<PurchaseHistory/>}/>
         </Route>
-
-
-
-
-
-
-
       </Routes>
+      <Footer/>
     </Router>
   );
 };
