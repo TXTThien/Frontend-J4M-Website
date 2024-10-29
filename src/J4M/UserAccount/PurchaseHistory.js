@@ -4,7 +4,24 @@ import { useEffect, useState } from "react";
 const PurchaseHistory = () => {
   const access_token = localStorage.getItem("access_token");
   const [purchased, setPurchase] = useState({});
-  const [billInfo, setBillInfo] = useState([]);
+  const [billInfo, setBillInfo] = useState([
+    // {
+    //   title: "Product 1",
+    //   price: 1000,
+    //   number: 2,
+    //   review: false,
+    // },
+    // {
+    //   title: "Product 2",
+    //   price: 2000,
+    //   number: 1,
+    //   review: {
+    //     comment: "Good product!",
+    //     rating: 4,
+    //     .....
+    //   },
+    // },
+  ]);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
@@ -100,7 +117,7 @@ const PurchaseHistory = () => {
 
   return (
     <div>
-      <h3>Lịch sử mua hàng</h3>
+      <h2 style={{margin:'16px 8px'}}>Lịch sử mua hàng</h2>
       <table>
         <thead>
           <tr>
@@ -119,13 +136,12 @@ const PurchaseHistory = () => {
               <td>{bill.number}</td>
               <td>{bill.price}</td>
               <td>
-                {" "}
                 {bill.review ? (
-                  <button onClick={() => handleReviewClick(bill.review.comment)}>
+                  <a style={{color: "blue", cursor: "pointer"}} onClick={() => handleReviewClick(bill.review.comment)}>
                     Xem
-                  </button>
+                  </a>
                 ) : (
-                  <button onClick={() => handleAddReviewClick(bill.productId)}>Đánh giá</button>
+                  <a style={{color: "orange",cursor: "pointer"}} onClick={() => handleAddReviewClick(bill.productId)}>Đánh giá</a>
                 )}
               </td>
             </tr>

@@ -50,8 +50,8 @@ const ChangePassword = () => {
           // withCredentials: true,  // Include cookies in the request
         }
       );
-    //   console.log("data of response: ", response.data);
-        alert(response.data);
+      //   console.log("data of response: ", response.data);
+      alert(response.data);
     } catch (error) {
       if (error.response) {
         console.log("Error response: ");
@@ -70,7 +70,9 @@ const ChangePassword = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <h2 style={{ margin: "16px 8px" }}>Đổi mặt khẩu</h2>
+      <form onSubmit={handleSubmit} style={{padding:"0 8px"}}>
+
         <div className="space-y-2">
           <label htmlFor="currentPassword">Current Password</label>
           <input
@@ -83,9 +85,7 @@ const ChangePassword = () => {
             onChange={handleChange}
             required
           />
-          {error.currentPassword && (
-            <p >{error.currentPassword}</p>
-          )}
+          {error.currentPassword && <p>{error.currentPassword}</p>}
         </div>
         <div className="space-y-2">
           <label htmlFor="newPassword">New Password</label>
@@ -97,9 +97,7 @@ const ChangePassword = () => {
             onChange={handleChange}
             required
           />
-          {error.newPassword && (
-            <p >{error.newPassword}</p>
-          )}
+          {error.newPassword && <p>{error.newPassword}</p>}
         </div>
         <div className="space-y-2">
           <label htmlFor="confirmPassword">Confirm New Password</label>
@@ -113,14 +111,10 @@ const ChangePassword = () => {
             onChange={handleChange}
             required
           />
-          {error.confirmPassword && (
-            <p >{error.confirmPassword}</p>
-          )}
+          {error.confirmPassword && <p>{error.confirmPassword}</p>}
         </div>
         <button type="submit">Đổi mật khẩu</button>
-        {error.message && (
-          <p >{error.message}</p>
-        )}
+        {error.message && <p>{error.message}</p>}
       </form>
     </>
   );
