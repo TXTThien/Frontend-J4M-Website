@@ -26,8 +26,21 @@ const Header = () => {
     }
   };
 
-  const handleCartClick = () => {
-    console.log("Giỏ hàng");
+  const handlePrebuy = async() => {
+    try {
+      const response = await axios.get("http://localhost:8080/cart", {
+        headers: {
+          "Account-ID": accountId,
+        },
+        withCredentials: true,
+      });
+
+      if (response.data.redirectUrl) {
+        window.location.href = response.data.redirectUrl;
+      }
+    } catch (error) {
+      console.log("Đăng nhập thất bại:", error);
+    }
   };
 
   const toggleDropdown = () => {
@@ -104,7 +117,7 @@ const Header = () => {
         <button className="login-button" onClick={handleLoginClick}>
           <FontAwesomeIcon icon={faUser} />
         </button>
-        <button className="cart-button" onClick={() => console.log("Giỏ hàng")}>
+        <button className="cart-button" onClick={handlePrebuy}>
           <FontAwesomeIcon icon={faCartShopping} />
           <span className="cart-count">{cartCount > 0 ? cartCount : 0}</span>
         </button>

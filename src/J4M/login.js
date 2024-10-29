@@ -23,7 +23,7 @@ const Login = () => {
       localStorage.setItem('refresh_token', refresh_token);
       localStorage.setItem('accountID', idAccount);
 
-      navigate('/dashboard');
+      navigate('/');
     } catch (err) {
       setError('Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin.');
       console.error(err);

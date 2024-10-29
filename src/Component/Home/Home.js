@@ -48,11 +48,21 @@ const HomePage = () => {
       <Slider {...settings} className="banner-slider">
         {banners.map((banner) => (
           <div key={banner.bannerID} className="banner">
-            <img
-              src={banner.bannerImage}
-              alt={banner.title}
-              className="banner-image"
-            />
+            <a
+              href={
+                banner.productID?.productID
+                  ? `/detail/${banner.productID.productID}`
+                  : banner.productTypeID?.productTypeID
+                  ? `/product/sort/?productType=${banner.productTypeID.productTypeID}`
+                  : `/product/sort/?category=${banner.categoryID?.categoryID}`
+              }
+            >
+              <img
+                src={banner.bannerImage}
+                alt={banner.title}
+                className="banner-image"
+              />
+            </a>
           </div>
         ))}
       </Slider>
@@ -101,7 +111,7 @@ const HomePage = () => {
         ))}
       </div>
       {error && <p className="error">{error}</p>}
-      <div>
+      <div className="boxXemThem">
         <a href="/product" class="xem-them">
           Xem thêm
         </a>
@@ -138,7 +148,7 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className="boxXemThem">
         <a href="/news" class="xem-them">
           Xem thêm
         </a>

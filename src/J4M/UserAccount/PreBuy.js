@@ -366,130 +366,142 @@ const totalPrice = calculateTotalPrice();
 const discountAmount = calculateDiscountAmount(totalPrice);
 const totalPayment = totalPrice - discountAmount;
   return (
-    <div>
-<h2>Giỏ hàng của bạn: <span>({cartItems.length} sản phẩm)</span></h2>
-{error && <p>{error}</p>}
-    {cartItems.length > 0 ? (
-      <div style={{ display: 'flex' }}>
-        <div style={{ flex: 1 }}>
-          <ul className="cart-list">
-          {cartItems.map(item => (
-      <div key={item.cartID} className="cart-item">
-        <li style={{ display: 'flex', alignItems: 'center' }}>
-        <input
-          type="checkbox"
-          className="custom-checkbox"
-          checked={item.selected}
-          onChange={() => handleCheckboxChange(item.cartID)} 
-      />
-          <img
-            src={item.avatar}
-            alt={item.productTitle}
-          />
-          <div style={{ flex: 1 }}> 
-            <p className="product-title">{item.productTitle}</p> 
-            <p className="product-price">
-              Giá: {(item.productPrice * item.number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ
-            </p>
-            <label className="product-size-label">
-              Kích thước:
-              <select
-                value={item.selectedSize}
-                onChange={(e) => handleSizeChange(item.cartID, e.target.value)}
-                className="product-size-select"  
-                style={{ marginLeft: '5px' }}
-              >
-                {item.sizes.map((size, index) => (
-                  <option key={size} value={size}>
-                    {size}
+    <div className="prebuy-container">
+      <h2 className="prebuy-h2">Giỏ hàng của bạn: <span>({cartItems.length} sản phẩm)</span></h2>
+      {error && <p>{error}</p>}
+      {cartItems.length > 0 ? (
+        <div style={{ display: 'flex' }}>
+          <div style={{ flex: 1 }}>
+            <ul className="prebuy-cart-list">
+              {cartItems.map(item => (
+                <div key={item.cartID} className="prebuy-cart-item">
+                  <li style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="checkbox"
+                      className="prebuy-custom-checkbox"
+                      checked={item.selected}
+                      onChange={() => handleCheckboxChange(item.cartID)} 
+                    />
+                    <img
+                      src={item.avatar}
+                      alt={item.productTitle}
+                    />
+                    <div style={{ flex: 1 }}> 
+                      <p className="prebuy-product-title">{item.productTitle}</p> 
+                      <p className="prebuy-product-price">
+                        Giá: {(item.productPrice * item.number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ
+                      </p>
+                      <label className="prebuy-product-size-label">
+                        Kích thước:
+                        <select
+                          value={item.selectedSize}
+                          onChange={(e) => handleSizeChange(item.cartID, e.target.value)}
+                          className="prebuy-product-size-select"  
+                          style={{ marginLeft: '5px' }}
+                        >
+                          {item.sizes.map((size, index) => (
+                            <option key={size} value={size}>
+                              {size}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <p className="prebuy-product-stock" style={{ fontSize: '1em', color: '#999', marginTop: '5px' }}>
+                        Tồn kho: {item.stock[item.sizes.indexOf(item.selectedSize)]}
+                      </p>
+                      <label className="prebuy-label" style={{ marginLeft: '10px' }}>
+                        Số lượng:
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.number}
+                          onChange={(e) => handleQuantityChange(item.cartID, e.target.value)}
+                          style={{ width: '80px', marginLeft: '5px' }}
+                        />
+                        {errorMessages[item.cartID] && (
+                          <p style={{ color: 'red' }}>{errorMessages[item.cartID]}</p>
+                        )}
+                      </label>
+                    </div>
+                    <img
+                          src={deleteicon}
+                          alt="Xóa"
+                          onClick={() => handleDelete(item.cartID)} 
+                          className="prebuy-delete-icon"
+                          style={{
+                            cursor: 'pointer',
+                            width: '80px',
+                            height: '80px',
+                            marginRight: '50px',
+                            transition: 'transform 0.2s',
+                            borderRadius: '40px'
+                        }}                          
+                      />
+                  </li>
+                </div>
+              ))}
+            </ul>
+          </div>
+          <div style={{ flex: 1, paddingLeft: '20px' }}>
+            <div className="prebuy-price-summary">
+              <h3 className="prebuy-total-price">Tổng tiền: {calculateTotalPrice().toLocaleString('vi-VN')} VND</h3>
+              <h3 className="prebuy-discount-amount">Giảm giá: -{appliedDiscount.toLocaleString('vi-VN')} VND</h3>
+              <h3 className="prebuy-total-payment">Tổng thanh toán: {(calculateTotalPrice() - appliedDiscount).toLocaleString('vi-VN')} VND</h3>
+            </div>
+            <select 
+              value={selectedDiscount || ""} 
+              onChange={handleDiscountChange} 
+              className="prebuy-discount-select"
+            >
+              <option value="">Chọn mã giảm giá</option>
+              {discounts
+                .filter(discount => discount.status === "Enable")
+                .map(discount => (
+                  <option key={discount.discountID} value={discount.discountID}>
+                    Giảm giá {discount.discountPercent * 100}% (ID: {discount.discountID})
                   </option>
                 ))}
-              </select>
-            </label>
-            <p className="product-stock" style={{ fontSize: '1em', color: '#999', marginTop: '5px' }}>
-              Tồn kho: {item.stock[item.sizes.indexOf(item.selectedSize)]}
-            </p>
-            <label style={{ marginLeft: '10px' }}>
-              Số lượng:
-              <input
-                type="number"
-                min="1"
-                value={item.number}
-                onChange={(e) => handleQuantityChange(item.cartID, e.target.value)}
-                style={{ width: '80px', marginLeft: '5px' }}
-              />
-              {errorMessages[item.cartID] && (
-                <p style={{ color: 'red' }}>{errorMessages[item.cartID]}</p>
-              )}
-            </label>
+            </select>
+            <button onClick={handleApplyDiscount} className="prebuy-button">Áp dụng</button>
+            <div className="prebuy-payment-options">
+              <h3>Phương thức thanh toán</h3>
+              <label className="prebuy-payment-option">
+                <input
+                  type="radio"
+                  value="vnpay"
+                  checked={selectedPaymentMethod === "vnpay"}
+                  onChange={() => setSelectedPaymentMethod("vnpay")}
+                />
+                <img src={vnpay} alt="VNPay" className="prebuy-payment-icon" />
+                VNPay
+              </label>
+              <label className="prebuy-payment-option">
+                <input
+                  type="radio"
+                  value="cash"
+                  checked={selectedPaymentMethod === "cash"}
+                  onChange={() => setSelectedPaymentMethod("cash")}
+                />
+                <img src={payment} alt="Thanh toán khi nhận hàng" className="prebuy-payment-icon" />
+                Thanh toán khi nhận hàng
+              </label>
+              <div className="prebuy-button-container">
+                <button
+                  onClick={() => selectedPaymentMethod === 'vnpay' ? handleBuyVNPay() : handleBuy()}
+                  className="prebuy-payment-button"
+                >
+                  Thanh toán
+                </button>
+              </div>
+            </div>
           </div>
-          <img
-              src={deleteicon}
-              alt="Xóa"
-              onClick={() => handleDelete(item.cartID)} 
-              className="delete-icon"
-          />
-        </li>
-      </div>
-    ))}
-      </ul>
-    </div>
-    <div style={{ flex: 1, paddingLeft: '20px' }}>
-      <div className="price-summary">
-        <h3 className="total-price">Tổng tiền: {totalPrice.toLocaleString('vi-VN')} VND</h3>
-        <h3 className="discount-amount">Giảm giá: -{discountAmount.toLocaleString('vi-VN')} VND</h3>
-        <h3 className="total-payment">Tổng thanh toán: {totalPayment.toLocaleString('vi-VN')} VND</h3>
-      </div>
-      <select value={selectedDiscount || ""} onChange={handleDiscountChange} className="discount-select">
-          <option value="">Chọn mã giảm giá</option>
-          {discounts
-              .filter(discount => discount.status === "Enable")
-              .map(discount => (
-                  <option key={discount.discountID} value={discount.discountID}>
-                      Giảm giá {discount.discountPercent * 100}% (ID: {discount.discountID})
-                  </option>
-              ))}
-      </select>
-      <button onClick={handleApplyDiscount}>Áp dụng</button>
-      <div className="payment-options">
-        <h3>Phương thức thanh toán</h3>
-        <label className="payment-option">
-          <input
-            type="radio"
-            value="vnpay"
-            checked={selectedPaymentMethod === "vnpay"}
-            onChange={() => setSelectedPaymentMethod("vnpay")}
-          />
-          <img src={vnpay} alt="VNPay" className="payment-icon" />
-          VNPay
-        </label>
-        <label className="payment-option">
-          <input
-            type="radio"
-            value="cash"
-            checked={selectedPaymentMethod === "cash"}
-            onChange={() => setSelectedPaymentMethod("cash")}
-          />
-          <img src={payment} alt="Thanh toán khi nhận hàng" className="payment-icon" />
-          Thanh toán khi nhận hàng
-        </label>
-        <div className="button-container">
-          <button
-            onClick={() => selectedPaymentMethod === 'vnpay' ? handleBuyVNPay() : handleBuy()}
-            className="payment-button"
-          >
-            Thanh toán
-          </button>
         </div>
-      </div>
-    </div>
-  </div>
-) : (
-  <p>Giỏ hàng của bạn đang trống.</p>
-)}
-
+      ) : (
+        <p>Giỏ hàng của bạn đang trống.</p>
+      )}
     </div>
   );
 };
+
 
 export default PreBuy;
