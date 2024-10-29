@@ -12,6 +12,7 @@ const AdminImage = () => {
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem("access_token");
   const navigate = useNavigate();
+  const [file, setFile] = useState(null); 
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -36,6 +37,46 @@ const AdminImage = () => {
 
     fetchImages();
   }, [accesstoken]);
+
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUploadImage = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+        },
+        credentials: "include",
+        body: formData,
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        setNewImageURL(data.DT); 
+        console.log("Tải lên thành công:", data.DT);
+        if (editingImageId) {
+          setImages((prevImages) =>
+            prevImages.map((image) =>
+              image.imageID === editingImageId ? { ...image, imageURL: data.DT } : image
+            )
+          );
+        }
+      } else {
+        console.error("Lỗi khi tải lên:", data.EM);
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải lên:", err.message);
+    }
+  };
+  
 
   const handleDelete = async (id) => {
     try {
@@ -63,6 +104,7 @@ const AdminImage = () => {
 
   const handleSave = async (id, imageURL, productId, status) => {
     try {
+      // Sử dụng URL hình ảnh mới đã được cập nhật
       const response = await fetch(`http://localhost:8080/api/v1/admin/images/${id}`, {
         method: "PUT",
         headers: {
@@ -72,7 +114,7 @@ const AdminImage = () => {
         credentials: "include",
         body: JSON.stringify({ imageURL, product: { productID: productId }, status }),
       });
-
+  
       if (response.ok) {
         const updatedImage = await response.json();
         setImages((prevImages) =>
@@ -136,11 +178,11 @@ const AdminImage = () => {
     </div>
       <h3>Thêm Hình Ảnh Mới</h3>
       <div>
-        <label>URL Hình Ảnh: </label>
-        <input
-          value={newImageURL}
-          onChange={(e) => setNewImageURL(e.target.value)}
-        />
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUploadImage}>Tải Lên Hình Ảnh</button>
+        {newImageURL && (
+          <img src={newImageURL} alt="Hình Ảnh" style={{ width: 100, height: 'auto' }} />
+        )}
         <label>Sản Phẩm ID: </label>
         <input
           value={selectedProductId}
@@ -176,22 +218,16 @@ const AdminImage = () => {
               <tr key={image.imageID}>
                 <td>{image.imageID}</td>
                 <td>
-                  {editingImageId === image.imageID ? (
-                    <input
-                      value={image.imageURL}
-                      onChange={(e) =>
-                        setImages((prevImages) =>
-                          prevImages.map((i) =>
-                            i.imageID === image.imageID
-                              ? { ...i, imageURL: e.target.value }
-                              : i
-                          )
-                        )
-                      }
-                    />
-                  ) : (
-                    image.imageURL
-                  )}
+                {editingImageId === image.imageID ? (
+                  <div>
+                    <label>Chọn file: </label>
+                    <input type="file" onChange={handleFileChange} />
+                    <button onClick={handleUploadImage}>Tải ảnh lên</button>
+                    {newImageURL && <img src={newImageURL} alt="Hình Ảnh Mới" style={{ width: 100 }} />}
+                  </div>
+                ) : (
+                  <img src={image.imageURL} alt="Hình Ảnh" style={{ width: 100 }} />
+                )}
                 </td>
                 <td>
                   {editingImageId === image.imageID ? (

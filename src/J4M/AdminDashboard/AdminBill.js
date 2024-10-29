@@ -78,10 +78,10 @@ const AdminBill = () => {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ isPaid: parseInt(isPaid, 10), status }),
+          body: JSON.stringify({ isPaid: isPaid, status }),
         }
       );
-
+  
       if (response.ok) {
         const updatedBill = await response.json();
         setBills(bills.map((bill) => (bill.billID === id ? updatedBill : bill)));
@@ -99,7 +99,10 @@ const AdminBill = () => {
   };
 
   const handleInputChange = (e, id, field) => {
-    const value = field === "paid" ? parseInt(e.target.value, 10) : e.target.value;
+    let value = e.target.value;
+    if (field === "paid") {
+      value = value === "1"; 
+    }
     setBills(
       bills.map((bill) =>
         bill.billID === id ? { ...bill, [field]: value } : bill
@@ -143,16 +146,16 @@ const AdminBill = () => {
                   <td>
                     {editingBillId === bill.billID ? (
                       <select
-                        value={bill.paid}
+                        value={bill.paid ? "1" : "0"} 
                         onChange={(e) =>
                           handleInputChange(e, bill.billID, "paid")
                         }
                       >
-                        <option value={1}>Có</option>
-                        <option value={0}>Không</option>
+                        <option value="1">Có</option>
+                        <option value="0">Không</option>
                       </select>
                     ) : (
-                      bill.paid === 1 ? "Có" : "Không"
+                      bill.paid ? "Có" : "Không"
                     )}
                   </td>
                   <td>

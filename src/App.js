@@ -29,6 +29,9 @@ import ChangePassword from './J4M/UserAccount/ChangePassword';
 import PurchaseHistory from './J4M/UserAccount/PurchaseHistory';
 import Header from './Component/Header/header';
 import Footer from './Component/Footer/footer';
+import PreBuy from './J4M/UserAccount/PreBuy';
+import PaymentFailure from './J4M/UserAccount/PaymentFailure';
+import PaymentSuccess from './J4M/UserAccount/PaymentSuccess';
 
 const App = () => {
   return (
@@ -42,6 +45,7 @@ const App = () => {
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/PreBuy" element={<PreBuy />} />
         <Route path="/AdminBill" element={<AdminBill />} />
         <Route path="/AdminBanner" element={<AdminBanner />} />
         <Route path="/AdminAccount" element={<AdminAccount/>} />
@@ -58,6 +62,8 @@ const App = () => {
         <Route path="/AdminImage" element={<AdminImage/>} />
         <Route path="/AdminProductSize" element={<AdminProductSize/>} />
         <Route path="/AdminProductType" element={<AdminProductType/>} />
+        <Route path="/PaymentFailure" element={<PaymentFailure/>} />
+        <Route path="/PaymentSuccess" element={<PaymentSuccess/>} />
 
         <Route path="/account" element={<AccountLayout />}>
           <Route path="profile" element={<Profile />} />

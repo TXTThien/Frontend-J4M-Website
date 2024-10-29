@@ -77,6 +77,7 @@ const AdminProduct = () => {
         setImageUrl(data.DT); 
         setNewProduct({ ...newProduct, avatar: data.DT });
         console.log("Tải lên thành công:", data.DT);
+        
       } else {
         console.error("Lỗi khi tải lên:", data.EM);
       }
