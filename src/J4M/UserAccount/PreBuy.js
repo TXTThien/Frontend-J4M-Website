@@ -179,13 +179,7 @@ const PreBuy = () => {
       });
     }
   };
-  const calculateDaysLeft = (endDate) => {
-    const end = new Date(endDate[0], endDate[1] - 1, endDate[2]); 
-    const now = new Date();
-    const timeDiff = end - now;
-    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); 
-    return daysLeft >= 0 ? daysLeft : 0; 
-  };
+
   const calculateTotalPrice = () => {
     return cartItems
       .filter(item => item.selected) 
