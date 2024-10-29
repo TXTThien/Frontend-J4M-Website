@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import userImg from "./Image/user.png";
+import { useNavigate} from "react-router-dom";
 import phonenumberImg from "./Image/telephone.png";
 import emailImg from "./Image/mail.png";
 import addressImg from "./Image/location.png";
@@ -12,7 +11,8 @@ const Profile = () => {
   const [profileForm, setProfileForm] = useState({});
   const [error, setError] = useState({});
   const [isEditable, SetIsEditable] = useState(false);
-
+  const accountID = localStorage.getItem("accountID");
+  const access_token = localStorage.getItem("access_token");
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileForm({ ...profileForm, [name]: value });
@@ -66,33 +66,6 @@ const Profile = () => {
     return formError;
   };
 
-  const accountID = localStorage.getItem("accountID")
-  const access_token = localStorage.getItem("access_token");
-
-
-  // JWT decoding function to get payload
-  const getDecodedToken = (access_token) => {
-    try {
-      const base64Url = access_token.split(".")[1]; // take payload
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-
-      return JSON.parse(jsonPayload); // return JSON object
-    } catch (error) {
-      console.error("Invalid access_token", error);
-      return null;
-    }
-  };
-
-
-
   const getUserInfor = async () => {
     try {
       const response = await axios.get(
@@ -127,12 +100,13 @@ const Profile = () => {
 
   useEffect(() => {
     if(accountID && access_token) {
+      //TODO check token expire if it expired navigate to login page
       getUserInfor();
     } else {
       navigate("/login"); // Redirect to login page if not authenticated
     }
   },[]);
-  const payload = getDecodedToken(access_token); //payload: {sub: 'txtt1103', iat: 1729597471, exp: 1729683871}
+  
   const updateAccount = async () => {
     try {
       const response = await axios.put(
@@ -167,27 +141,17 @@ const Profile = () => {
     }
   }
     return (
-      <>
+      <div className="profile-container">
+          <h2 style={{margin:'0 8px'}}>Thông tin cá nhân</h2>
         <div>
-          <button onClick={() => navigate(-1)}>Quay lại</button>
-          <h2>Thông tin cá nhân</h2>
-        </div>
-        <div>
-          <div>
-            <img src={userImg} alt="user" />
-            <h2>
-              {payload?.sub} <span>#{profileForm.id}</span>
-            </h2>
-            <p>{profileForm.email}</p>
-          </div>
+          <form onSubmit={handleSubmit} className="profile-form">
+            <section className="profile-form-section">
 
-          <form onSubmit={handleSubmit}>
-            <section>
-              <div>
-                <div>
+              <div className="profile-form-group">
+                <div className="form-icon">
                   <img src={nameImg} alt="name" />
                 </div>
-                <div>
+                <div className="form-input">
                   <label htmlFor="name">Họ tên</label>
                   <input
                     id="name"
@@ -197,15 +161,15 @@ const Profile = () => {
                     onChange={handleChange}
                     disabled={!isEditable}
                   />
-                  {error.name && <span>{error.name}</span>}
+                  {error.name && <span classname="form-error">{error.name}</span>}
                 </div>
               </div>
 
-              <div>
-                <div>
+              <div className="profile-form-group">
+                <div className="form-icon">
                   <img src={emailImg} alt="email" />
                 </div>
-                <div>
+                <div className="form-input">
                   <label htmlFor="email">Email</label>
                   <input
                     id="email"
@@ -215,17 +179,15 @@ const Profile = () => {
                     onChange={handleChange}
                     disabled={!isEditable}
                   />
-                  {error.email && <span>{error.email}</span>}
+                  {error.email && <span classname="form-error">{error.email}</span>}
                 </div>
               </div>
-            </section>
 
-            <section>
-              <div>
-                <div>
+              <div className="profile-form-group">
+                <div className="form-icon">
                   <img src={phonenumberImg} alt="phone number" />
                 </div>
-                <div>
+                <div className="form-input">
                   <label htmlFor="phonenumber">Số điện thoại</label>
                   <input
                     id="phonenumber"
@@ -235,15 +197,19 @@ const Profile = () => {
                     onChange={handleChange}
                     disabled={!isEditable}
                   />
-                  {error.phonenumber && <span>{error.phonenumber}</span>}
+                  {error.phonenumber && <span classname="form-error">{error.phonenumber}</span>}
                 </div>
               </div>
 
-              <div>
-                <div>
+            </section>
+
+            <section className="profile-form-section">
+
+              <div className="profile-form-group">
+                <div className="form-icon">
                   <img src={addressImg} alt="address" />
                 </div>
-                <div>
+                <div className="form-input">
                   <label htmlFor="address">Địa chỉ</label>
                   <input
                     id="address"
@@ -253,16 +219,16 @@ const Profile = () => {
                     onChange={handleChange}
                     disabled={!isEditable}
                   />
-                  {error.address && <span>{error.address}</span>}
+                  {error.address && <span classname="form-error">{error.address}</span>}
                 </div>
               </div>
 
-              <div>
-                <div>
+              <div className="profile-form-group">
+                <div className="form-icon">
                   <img src={roleImg} alt="role" />
                 </div>
-                <div>
-                  <label htmlFor="role">Thành viên</label>
+                <div className="form-ipnput">
+                  <label htmlFor="role">Người dùng</label>
                   <input
                     id="role"
                     type="text"
@@ -284,7 +250,7 @@ const Profile = () => {
             </div>
           </form>
         </div>
-      </>
+      </div>
     );
   };
 export default Profile;
