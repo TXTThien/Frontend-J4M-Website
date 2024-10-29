@@ -371,10 +371,9 @@ const handleDiscountChange = (event) => {
 const totalPrice = calculateTotalPrice();
 const discountAmount = calculateDiscountAmount(totalPrice);
 const totalPayment = totalPrice - discountAmount;
-
   return (
     <div>
-<h2>Giỏ hàng của bạn:</h2>
+<h2>Giỏ hàng của bạn: <span>({cartItems.length} sản phẩm)</span></h2>
 {error && <p>{error}</p>}
     {cartItems.length > 0 ? (
       <div style={{ display: 'flex' }}>
@@ -383,11 +382,12 @@ const totalPayment = totalPrice - discountAmount;
           {cartItems.map(item => (
       <div key={item.cartID} className="cart-item">
         <li style={{ display: 'flex', alignItems: 'center' }}>
-          <input
-            type="checkbox"
-            checked={item.selected}
-            onChange={() => handleCheckboxChange(item.cartID)} 
-          />
+        <input
+          type="checkbox"
+          className="custom-checkbox"
+          checked={item.selected}
+          onChange={() => handleCheckboxChange(item.cartID)} 
+      />
           <img
             src={item.avatar}
             alt={item.productTitle}
@@ -443,7 +443,7 @@ const totalPayment = totalPrice - discountAmount;
     <div style={{ flex: 1, paddingLeft: '20px' }}>
       <div className="price-summary">
         <h3 className="total-price">Tổng tiền: {totalPrice.toLocaleString('vi-VN')} VND</h3>
-        <h3 className="discount-amount">Giảm giá: {discountAmount.toLocaleString('vi-VN')} VND</h3>
+        <h3 className="discount-amount">Giảm giá: -{discountAmount.toLocaleString('vi-VN')} VND</h3>
         <h3 className="total-payment">Tổng thanh toán: {totalPayment.toLocaleString('vi-VN')} VND</h3>
       </div>
       <select value={selectedDiscount || ""} onChange={handleDiscountChange} className="discount-select">
@@ -479,12 +479,14 @@ const totalPayment = totalPrice - discountAmount;
           <img src={payment} alt="Thanh toán khi nhận hàng" className="payment-icon" />
           Thanh toán khi nhận hàng
         </label>
-        <button
-          onClick={() => selectedPaymentMethod === 'vnpay' ? handleBuyVNPay() : handleBuy()}
-          className="payment-button"
-        >
-          Thanh toán
-        </button>
+        <div className="button-container">
+          <button
+            onClick={() => selectedPaymentMethod === 'vnpay' ? handleBuyVNPay() : handleBuy()}
+            className="payment-button"
+          >
+            Thanh toán
+          </button>
+        </div>
       </div>
     </div>
   </div>
