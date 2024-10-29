@@ -74,7 +74,7 @@
 }
 .cart-list {
     max-height: 800px; /* Chiều cao tối đa cho danh sách giỏ hàng */
-    width: 700px; /* Thiết lập chiều rộng */
+    width: 900px; /* Thiết lập chiều rộng */
     overflow-y: scroll; /* Hiển thị thanh cuộn theo chiều dọc */
     border-radius: 8px; /* Tăng kích thước bo tròn cho viền */
     padding: 10px; /* Khoảng cách bên trong danh sách */
@@ -257,4 +257,32 @@ button:hover {
     font-weight: bold; /* Chữ đậm */
     border-top: 2px solid #28a745; /* Viền trên cho tổng thanh toán */
     padding-top: 10px; /* Khoảng cách trên cho tổng thanh toán */
+}
+.cart-item .delete-icon {
+    cursor: pointer;
+    width: 50px; /* Kích thước biểu tượng */
+    height: 50px; /* Kích thước biểu tượng */
+    margin-left: 10px; /* Khoảng cách bên trái */
+    border: none; /* Loại bỏ viền nếu có */
+    transition: transform 0.2s; /* Hiệu ứng chuyển động */
+}
+
+.cart-item .delete-icon:hover {
+    transform: scale(1.1); /* Phóng to khi di chuột */
+}
+.discount-select {
+    padding: 10px; /* Khoảng cách bên trong */
+    border: 1px solid #ccc; /* Viền */
+    border-radius: 5px; /* Bo góc */
+    font-size: 16px; /* Kích thước chữ */
+    color: #333; /* Màu chữ */
+    background-color: #fff; /* Màu nền */
+    cursor: pointer; /* Con trỏ khi di chuột */
+    width: 100%; /* Chiều rộng đầy đủ */
+    transition: border-color 0.3s; /* Hiệu ứng chuyển đổi */
+}
+
+.discount-select:focus {
+    border-color: #007bff; /* Màu viền khi focus */
+    outline: none; /* Ẩn outline mặc định */
 }
