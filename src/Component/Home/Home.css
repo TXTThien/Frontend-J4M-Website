@@ -1,0 +1,7 @@
+.hero {
+    width: 100%;
+    min-height: 100vh;
+    background: url('../assets/baner.jpg') no-repeat center center; 
+    background-size: cover;
+    background-position: center;
+}

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import returnIcon from './ImageDashboard/return-button.png'; 
 
-
 const AdminNews = () => {
   const [newsList, setNewsList] = useState([]);
   const [editingNewsId, setEditingNewsId] = useState(null); 
@@ -15,6 +14,8 @@ const AdminNews = () => {
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem("access_token");
   const navigate = useNavigate(); 
+  const [imageUrl, setImageUrl] = useState("");
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -42,6 +43,39 @@ const AdminNews = () => {
 
     fetchNews();
   }, [accesstoken]);
+
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUploadImage = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch("http://localhost:8080/api/v1/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accesstoken}`,
+        },
+        credentials: "include",
+        body: formData,
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        setImageUrl(data.DT); 
+        setNewNews((prev) => ({ ...prev, newsImage: data.DT })); // Cập nhật đúng vào newNews
+        console.log("Tải lên thành công:", data.DT);
+      } else {
+        console.error("Lỗi khi tải lên:", data.EM);
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải lên:", err.message);
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -135,16 +169,16 @@ const AdminNews = () => {
   };
 
   return (
-<div className="admin-ql-container">
-<div className="title-container">
-      <img 
-        src={returnIcon} 
-        alt="Quay Lại" 
-        className="return-button" 
-        onClick={handleBackToDashboard} 
-      />
-      <h2>Quản Lý Tin Tức</h2>
-    </div>
+    <div className="admin-ql-container">
+      <div className="title-container">
+        <img 
+          src={returnIcon} 
+          alt="Quay Lại" 
+          className="return-button" 
+          onClick={handleBackToDashboard} 
+        />
+        <h2>Quản Lý Tin Tức</h2>
+      </div>
       <h3>Thêm Tin Tức Mới</h3>
       <div>
         <label>Tiêu Đề Tin Tức: </label>
@@ -155,12 +189,10 @@ const AdminNews = () => {
           }
         />
         <label>Hình Ảnh (URL): </label>
-        <input
-          value={newNews.newsImage}
-          onChange={(e) =>
-            setNewNews((prev) => ({ ...prev, newsImage: e.target.value }))
-          }
-        />
+        <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUploadImage}>Tải ảnh lên</button>
+        {imageUrl && <img src={imageUrl} alt="News Avatar" style={{ width: 100 }} />}
+
         <label>Nội Dung: </label>
         <textarea
           value={newNews.content}
@@ -192,6 +224,7 @@ const AdminNews = () => {
               <th>Tiêu Đề</th>
               <th>Hình Ảnh (URL)</th>
               <th>Nội Dung</th>
+              <th>Ngày Tạo</th> 
               <th>Trạng Thái</th>
               <th>Hành động</th>
             </tr>
@@ -200,8 +233,7 @@ const AdminNews = () => {
             {newsList.map((news) => (
               <tr key={news.newsID}>
                 <td>{news.newsID}</td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{editingNewsId === news.newsID ? (
                     <input
                       value={news.newsTitle}
                       onChange={(e) =>
@@ -218,26 +250,18 @@ const AdminNews = () => {
                     news.newsTitle
                   )}
                 </td>
-                <td>
-                  {editingNewsId === news.newsID ? (
-                    <input
-                      value={news.newsImage}
-                      onChange={(e) =>
-                        setNewsList((prevNewsList) =>
-                          prevNewsList.map((n) =>
-                            n.newsID === news.newsID
-                              ? { ...n, newsImage: e.target.value }
-                              : n
-                          )
-                        )
-                      }
-                    />
+                <td>{editingNewsId === news.newsID ? (
+                    <div>
+                      <label>Avatar: </label>
+                      <input type="file" onChange={handleFileChange} />
+                      <button onClick={handleUploadImage}>Tải ảnh lên</button>
+                      {imageUrl && <img src={imageUrl} alt="News Avatar" style={{ width: 100 }} />}
+                    </div>
                   ) : (
-                    news.newsImage
+                    <img src={news.newsImage} alt="News Avatar" style={{ width: 100 }} />
                   )}
                 </td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{editingNewsId === news.newsID ? (
                     <textarea
                       value={news.content}
                       onChange={(e) =>
@@ -254,8 +278,8 @@ const AdminNews = () => {
                     news.content
                   )}
                 </td>
-                <td>
-                  {editingNewsId === news.newsID ? (
+                <td>{news.date ? new Date(news.date).toLocaleDateString("en-GB") : ""}</td>
+                <td>{editingNewsId === news.newsID ? (
                     <select
                       value={news.status}
                       onChange={(e) =>

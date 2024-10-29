@@ -1,14 +1,17 @@
+// src/Components/AdminBill.js
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom"; 
 import returnIcon from './ImageDashboard/return-button.png'; 
+import { Chart, registerables } from 'chart.js'; 
 
+Chart.register(...registerables);
 
 const AdminBill = () => {
   const [bills, setBills] = useState([]);
-  const [editingBillId, setEditingBillId] = useState(null); // Để biết hóa đơn nào đang được chỉnh sửa
+  const [editingBillId, setEditingBillId] = useState(null);
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem("access_token");
-  const navigate = useNavigate(); // Sử dụng useNavigate để điều hướng
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBills = async () => {
@@ -49,7 +52,7 @@ const AdminBill = () => {
           credentials: "include",
         }
       );
-  
+
       if (response.ok) {
         setBills((prevBills) =>
           prevBills.map((bill) =>
@@ -63,7 +66,6 @@ const AdminBill = () => {
       setError(err.message);
     }
   };
-  
 
   const handleSave = async (id, isPaid, status) => {
     try {
@@ -76,14 +78,14 @@ const AdminBill = () => {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ isPaid: parseInt(isPaid, 10), status }),
+          body: JSON.stringify({ isPaid: isPaid, status }),
         }
       );
-
+  
       if (response.ok) {
         const updatedBill = await response.json();
         setBills(bills.map((bill) => (bill.billID === id ? updatedBill : bill)));
-        setEditingBillId(null); // Đặt lại trạng thái sau khi lưu
+        setEditingBillId(null);
       } else {
         throw new Error("Không thể cập nhật hóa đơn.");
       }
@@ -93,11 +95,14 @@ const AdminBill = () => {
   };
 
   const handleUpdateClick = (billId) => {
-    setEditingBillId(billId); // Cho phép chỉnh sửa hóa đơn này
+    setEditingBillId(billId);
   };
 
   const handleInputChange = (e, id, field) => {
-    const value = field === "paid" ? parseInt(e.target.value, 10) : e.target.value; // Chuyển đổi `paid` thành số
+    let value = e.target.value;
+    if (field === "paid") {
+      value = value === "1"; 
+    }
     setBills(
       bills.map((bill) =>
         bill.billID === id ? { ...bill, [field]: value } : bill
@@ -106,11 +111,11 @@ const AdminBill = () => {
   };
 
   const handleBackToDashboard = () => {
-    navigate("/dashboard"); // Chuyển hướng về trang Dashboard
+    navigate("/dashboard");
   };
 
   return (
-<div className="admin-ql-container">
+    <div className="admin-ql-container">
       <div className="title-container">
           <img 
             src={returnIcon} 
@@ -119,78 +124,80 @@ const AdminBill = () => {
             onClick={handleBackToDashboard} 
           />
           <h2>Quản Lý Hóa Đơn</h2>
-        </div>
+      </div>
       {error && <p>{error}</p>}
       {bills.length === 0 ? (
         <p>Không có hóa đơn nào.</p>
       ) : (
-        <table border="1" cellPadding="10" cellSpacing="0">
-          <thead>
-            <tr>
-              <th>ID Hóa Đơn</th>
-              <th>Đã thanh toán</th>
-              <th>Trạng Thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bills.map((bill) => (
-              <tr key={bill.billID}>
-                <td>{bill.billID}</td>
-                <td>
-                  {editingBillId === bill.billID ? (
-                    <select
-                      value={bill.paid}
-                      onChange={(e) =>
-                        handleInputChange(e, bill.billID, "paid")
-                      }
-                    >
-                      <option value={1}>Có</option>
-                      <option value={0}>Không</option>
-                    </select>
-                  ) : (
-                    bill.paid === 1 ? "Có" : "Không"
-                  )}
-                </td>
-                <td>
-                  {editingBillId === bill.billID ? (
-                    <select
-                      value={bill.status}
-                      onChange={(e) =>
-                        handleInputChange(e, bill.billID, "status")
-                      }
-                    >
-                      <option value="Enable">Enable</option>
-                      <option value="Disable">Disable</option>
-                    </select>
-                  ) : (
-                    bill.status
-                  )}
-                </td>
-                <td>
-                  {editingBillId === bill.billID ? (
-                    <button
-                      onClick={() =>
-                        handleSave(bill.billID, bill.paid, bill.status)
-                      }
-                    >
-                      Lưu
-                    </button>
-                  ) : (
-                    <>
-                      <button onClick={() => handleUpdateClick(bill.billID)}>
-                        Chỉnh Sửa
-                      </button>
-                      <button onClick={() => handleDelete(bill.billID)}>
-                        Xóa
-                      </button>
-                    </>
-                  )}
-                </td>
+        <>
+          <table border="1" cellPadding="10" cellSpacing="0">
+              <tr>
+                <th>ID Hóa Đơn</th>
+                <th>Ngày</th>
+                <th>Đã thanh toán</th>
+                <th>Trạng Thái</th>
+                <th>Hành động</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            <tbody>
+              {bills.map((bill) => (
+                <tr key={bill.billID}>
+                  <td>{bill.billID}</td>
+                  <td>{bill.date ? new Date(bill.date).toLocaleDateString("en-GB") : ""}</td>
+                  <td>
+                    {editingBillId === bill.billID ? (
+                      <select
+                        value={bill.paid ? "1" : "0"} 
+                        onChange={(e) =>
+                          handleInputChange(e, bill.billID, "paid")
+                        }
+                      >
+                        <option value="1">Có</option>
+                        <option value="0">Không</option>
+                      </select>
+                    ) : (
+                      bill.paid ? "Có" : "Không"
+                    )}
+                  </td>
+                  <td>
+                    {editingBillId === bill.billID ? (
+                      <select
+                        value={bill.status}
+                        onChange={(e) =>
+                          handleInputChange(e, bill.billID, "status")
+                        }
+                      >
+                        <option value="Enable">Enable</option>
+                        <option value="Disable">Disable</option>
+                      </select>
+                    ) : (
+                      bill.status
+                    )}
+                  </td>
+                  <td>
+                    {editingBillId === bill.billID ? (
+                      <button
+                        onClick={() =>
+                          handleSave(bill.billID, bill.paid, bill.status)
+                        }
+                      >
+                        Lưu
+                      </button>
+                    ) : (
+                      <>
+                        <button onClick={() => handleUpdateClick(bill.billID)}>
+                          Chỉnh Sửa
+                        </button>
+                        <button onClick={() => handleDelete(bill.billID)}>
+                          Xóa
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </div>
   );

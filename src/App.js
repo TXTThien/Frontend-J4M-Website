@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './Component/Home/Home'
 import Login from './J4M/login';
 import Dashboard from './J4M//AdminDashboard/giaodien';
 import Forgot from './J4M/Forgot';
@@ -26,21 +27,25 @@ import AccountLayout from './J4M/UserAccount/AccountLayout';
 import Profile from './J4M/UserAccount/Profile';
 import ChangePassword from './J4M/UserAccount/ChangePassword';
 import PurchaseHistory from './J4M/UserAccount/PurchaseHistory';
-
-
-
-
+import Header from './Component/Header/header';
+import Footer from './Component/Footer/footer';
+import PreBuy from './J4M/UserAccount/PreBuy';
+import PaymentFailure from './J4M/UserAccount/PaymentFailure';
+import PaymentSuccess from './J4M/UserAccount/PaymentSuccess';
 
 const App = () => {
   return (
     <Router>
+       <Header /> 
       <Routes>
+        <Route path='/home' element={<Home/>}></Route>
         <Route path="/" element={<J4M />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/PreBuy" element={<PreBuy />} />
         <Route path="/AdminBill" element={<AdminBill />} />
         <Route path="/AdminBanner" element={<AdminBanner />} />
         <Route path="/AdminAccount" element={<AdminAccount/>} />
@@ -57,6 +62,8 @@ const App = () => {
         <Route path="/AdminImage" element={<AdminImage/>} />
         <Route path="/AdminProductSize" element={<AdminProductSize/>} />
         <Route path="/AdminProductType" element={<AdminProductType/>} />
+        <Route path="/PaymentFailure" element={<PaymentFailure/>} />
+        <Route path="/PaymentSuccess" element={<PaymentSuccess/>} />
 
         <Route path="/account" element={<AccountLayout />}>
           <Route path="profile" element={<Profile />} />
@@ -64,6 +71,7 @@ const App = () => {
           <Route path="orders" element={<PurchaseHistory/>}/>
         </Route>
       </Routes>
+      <Footer/>
     </Router>
   );
 };

@@ -17,6 +17,9 @@ const AdminBanner = () => {
   const accesstoken = localStorage.getItem("access_token");
   const navigate = useNavigate();
   const [idType, setIdType] = useState("productID"); // Loại ID đang chọn
+  const [imageUrl, setImageUrl] = useState("");
+  const [file, setFile] = useState(null);
+
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -43,6 +46,42 @@ const AdminBanner = () => {
 
     fetchBanners();
   }, [accesstoken]);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleUploadImage = async () => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch("http://localhost:8080/api/v1/upload", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accesstoken}`,
+            },
+            credentials: "include",
+            body: formData,
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            const imageUrl = data.DT; // Lưu đường dẫn ảnh
+            setImageUrl(imageUrl); // Cập nhật đường dẫn ảnh vào state
+            setNewBanner((prevBanner) => ({
+                ...prevBanner,
+                bannerImage: imageUrl, // Cập nhật đường link ảnh vào state newBanner
+            }));
+            console.log("Tải lên thành công:", imageUrl);
+        } else {
+            console.error("Lỗi khi tải lên:", data.EM);
+        }
+    } catch (err) {
+        console.error("Lỗi khi tải lên:", err.message);
+    }
+};
 
   const handleDelete = async (id) => {
     try {
@@ -117,7 +156,7 @@ const AdminBanner = () => {
         const { productID, productTypeID, categoryID } = newBanner;
 
         const filteredBanner = {
-            bannerImage: newBanner.bannerImage,
+            bannerImage: newBanner.bannerImage, // Sử dụng bannerImage từ newBanner
             bannerType: newBanner.bannerType,
             status: newBanner.status,
             ...(productID.productID && { productID: { productID: productID.productID } }),
@@ -149,13 +188,14 @@ const AdminBanner = () => {
                 status: "Enable",
             });
             setIdType("productID");
+
         } else {
             throw new Error("Không thể tạo banner.");
         }
     } catch (err) {
         setError(err.message);
     }
-  };
+};
 
   const handleBackToDashboard = () => {
     navigate("/dashboard");
@@ -176,13 +216,11 @@ const AdminBanner = () => {
 
       <h3>Thêm Banner Mới</h3>
       <div>
-        <label>Hình Ảnh Banner: </label>
-        <input
-          value={newBanner.bannerImage}
-          onChange={(e) =>
-            setNewBanner((prev) => ({ ...prev, bannerImage: e.target.value }))
-          }
-        />
+      <label>Hình Ảnh Banner: </label>
+      <input type="file" onChange={handleFileChange} />
+        <button onClick={handleUploadImage}>Tải ảnh lên</button>
+        {imageUrl && <img src={imageUrl} alt="Banner Avatar" style={{ width: 100 }} />}
+
         <label>Loại Banner: </label>
         <select
           value={newBanner.bannerType}
@@ -296,7 +334,9 @@ const AdminBanner = () => {
             {bannerList.map((banner) => (
               <tr key={banner.bannerID}>
                 <td>{banner.bannerID}</td>
-                <td>{banner.bannerImage}</td>
+                <td>
+                  <img src={banner.bannerImage} alt="Banner" style={{ width: "100px", height: "auto" }} />
+                </td>
                 <td>{banner.bannerType}</td>
                 <td>{banner.productID?.productID || "N/A"}</td>
                 <td>{banner.productTypeID?.productTypeID || "N/A"}</td>
