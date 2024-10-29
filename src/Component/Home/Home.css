@@ -1,7 +1,135 @@
-.hero {
-    width: 100%;
-    min-height: 100vh;
-    background: url('../assets/baner.jpg') no-repeat center center; 
-    background-size: cover;
-    background-position: center;
+/* Home.css */
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 20px 0;
+  color: #333;
+  text-align: center;
+}
+
+
+.banner-slider {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  position: relative;
+  margin: 20px auto;
+}
+
+.banner {
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.banner-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+}
+
+.banner h2 {
+  font-size: 2rem;
+  color: #f39c12;
+  margin-bottom: 10px;
+}
+
+.banner-button {
+  background-color: #f39c12;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.banner-button:hover {
+  background-color: #e67e22;
+}
+
+/* Product Section */
+.product-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.product {
+  position: relative; 
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  width: 250px;
+  text-align: center;
+  padding: 15px;
+}
+
+.product:hover {
+  transform: scale(1.05);
+}
+
+.product img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.product h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 10px 0;
+}
+
+.product p {
+  font-size: 1rem;
+  color: #000;
+}
+
+/* Sold Quantity */
+.sold-quantity {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #666;
+  visibility: visible; /* Đảm bảo hiển thị ngay từ đầu */
+}
+
+/* Error Message */
+.error {
+  color: red;
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 20px 0;
+}
+.featured-title {
+  font-size: 2rem; 
+  color: #333; 
+  text-align: center; 
+  margin: 20px 0;
+  font-weight: bold; 
+  text-transform: uppercase; 
+  letter-spacing: 1px; 
+  border-bottom: 3px solid #f39c12; 
+  padding-bottom: 10px; 
 }
