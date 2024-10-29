@@ -14,10 +14,7 @@ const PreBuy = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash"); // State để lưu phương thức thanh toán
 
   useEffect(() => {
-    const savedCart = localStorage.getItem('cartItems');
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    } else if (accesstoken) {
+    if (accesstoken) {
       fetch('http://localhost:8080/prebuy', {
         headers: {
           'Authorization': `Bearer ${accesstoken}`,
@@ -35,17 +32,23 @@ const PreBuy = () => {
           selectedSize: item.selectedSize || item.sizes[0],
           selected: false,
         }));
+        
         setCartItems(itemsWithSelectedSize);
+        setDiscounts(data.discount || []);
+        
+        // Store fetched cart items and discounts in localStorage
+        localStorage.setItem('cartItems', JSON.stringify(itemsWithSelectedSize));
+        localStorage.setItem('discounts', JSON.stringify(data.discount || []));
       })
       .catch((error) => {
-        setError("Có lỗi xảy ra khi lấy giỏ hàng.");
+        setError("Có lỗi xảy ra khi lấy giỏ hàng hoặc dữ liệu giảm giá.");
         console.error(error);
       });
     } else {
       navigate('/login');
     }
   }, [accesstoken, navigate]);
-
+  
   // Thêm useEffect để lấy discount
   useEffect(() => {
     if (accesstoken) {
@@ -169,7 +172,27 @@ const PreBuy = () => {
   const calculateDiscountAmount = (totalPrice) => {
     return appliedDiscount; // Sử dụng giá trị giảm giá đã áp dụng
   };
-
+  const deleteDiscount = (discountID) => {
+    fetch(`http://localhost:8080/api/v1/admin/discount/${discountID}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accesstoken}`,
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Could not delete discount.');
+      }
+      console.log('Discount deleted successfully');
+      // Cập nhật lại danh sách discount nếu cần thiết
+      setDiscounts(prevDiscounts => prevDiscounts.filter(discount => discount.discountID !== discountID));
+    })
+    .catch(error => {
+      console.error(error);
+      setError("Có lỗi xảy ra khi xóa mã giảm giá.");
+    });
+  };
+  
   const handleBuy = () => {
     const selectedItems = cartItems.filter(item => item.selected);
     const cartIDs = selectedItems.map(item => item.cartID);
@@ -212,6 +235,9 @@ const PreBuy = () => {
     })
     .then(data => {
       alert(data);
+      if (selectedDiscount) {
+        deleteDiscount(selectedDiscount);
+      }
       const updatedCartItems = cartItems.filter(item => !item.selected);
       setCartItems(updatedCartItems);
       localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
@@ -279,26 +305,40 @@ const PreBuy = () => {
 
 
 
-  const handleCheckboxChange = (cartID) => {
-    const updatedItems = cartItems.map(item =>
-      item.cartID === cartID ? { ...item, selected: !item.selected } : item
-    );
-    setCartItems(updatedItems);
-    localStorage.setItem('cartItems', JSON.stringify(updatedItems));
-  };
-  const handleApplyDiscount = () => {
-    const selectedDiscountObj = discounts.find(discount => discount.discountID === selectedDiscount);
-    if (selectedDiscountObj) {
+const handleCheckboxChange = (cartID) => {
+  const updatedItems = cartItems.map(item =>
+    item.cartID === cartID ? { ...item, selected: !item.selected } : item
+  );
+  setCartItems(updatedItems);
+  localStorage.setItem('cartItems', JSON.stringify(updatedItems));
+};
+
+const handleApplyDiscount = () => {
+  console.log('Selected Discount:', selectedDiscount); // Logging giá trị của selectedDiscount
+
+  if (!selectedDiscount) {
+      alert('Vui lòng chọn mã giảm giá.');
+      return;
+  }
+
+  const selectedDiscountObj = discounts.find(discount => discount.discountID === selectedDiscount);
+  console.log('Selected Discount Object:', selectedDiscountObj); // Logging đối tượng giảm giá được chọn
+
+  if (selectedDiscountObj) {
       const totalPrice = calculateTotalPrice();
       const discountAmount = totalPrice * selectedDiscountObj.discountPercent; 
-      setAppliedDiscount(discountAmount); 
-    } else {
+      setAppliedDiscount(discountAmount);
+  } else {
       alert('Vui lòng chọn mã giảm giá hợp lệ.');
-    }
-  };
-  const totalPrice = calculateTotalPrice();
-  const discountAmount = calculateDiscountAmount(totalPrice);
-  const totalPayment = totalPrice - discountAmount;
+  }
+};
+
+const handleDiscountChange = (event) => {
+  setSelectedDiscount(Number(event.target.value)); // Chuyển đổi sang số
+};
+const totalPrice = calculateTotalPrice();
+const discountAmount = calculateDiscountAmount(totalPrice);
+const totalPayment = totalPrice - discountAmount;
 
   return (
     <div>
@@ -357,30 +397,21 @@ const PreBuy = () => {
           </div>
           <div style={{ flex: 1, paddingLeft: '20px' }}>
             <div className="price-summary">
-                <h3 className="total-price">Tổng tiền: {totalPrice} VND</h3>
-                <h3 className="discount-amount">Giảm giá: {discountAmount} VND</h3>
-                <h3 className="total-payment">Tổng thanh toán: {totalPayment} VND</h3>
+            <h3 className="total-price">Tổng tiền: {totalPrice.toLocaleString('vi-VN')} VND</h3>
+            <h3 className="discount-amount">Giảm giá: {discountAmount.toLocaleString('vi-VN')} VND</h3>
+            <h3 className="total-payment">Tổng thanh toán: {totalPayment.toLocaleString('vi-VN')} VND</h3>
             </div>
-            <select
-              value={selectedDiscount || ''} 
-              onChange={(e) => setSelectedDiscount(e.target.value)} 
-              className="discount-select"
-            >
-              <option value="" disabled>Chọn mã giảm giá</option> 
-              {discounts.length > 0 ? (
-                discounts.map(discount => {
-                  const daysLeft = calculateDaysLeft(discount.endDate); 
-                  return (
-                    <option key={discount.discountID} value={discount.discountID}>
-                      Mã giảm giá: {discount.discountPercent * 100}% (Còn {daysLeft} ngày)
-                    </option>
-                  );
-                })
-              ) : (
-                <option value="" disabled>Không có mã giảm giá nào</option>
-              )}
+            <select value={selectedDiscount || ""} onChange={handleDiscountChange}>
+                <option value="">Chọn mã giảm giá</option>
+                {discounts
+                    .filter(discount => discount.status === "Enable")
+                    .map(discount => (
+                        <option key={discount.discountID} value={discount.discountID}>
+                            Giảm giá {discount.discountPercent * 100}% (ID: {discount.discountID})
+                        </option>
+                    ))}
             </select>
-            <button onClick={handleApplyDiscount}>Áp dụng</button> 
+            <button onClick={handleApplyDiscount}>Áp dụng</button>
             <div className="payment-options">
             <h3>Phương thức thanh toán</h3>
             <label className="payment-option">
