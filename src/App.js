@@ -63,13 +63,6 @@ const App = () => {
           <Route path="changepassword" element={<ChangePassword />} />
           <Route path="orders" element={<PurchaseHistory/>}/>
         </Route>
-
-
-
-
-
-
-
       </Routes>
     </Router>
   );
