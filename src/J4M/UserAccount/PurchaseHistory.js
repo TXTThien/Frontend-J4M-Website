@@ -1,108 +1,110 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 const PurchaseHistory = () => {
   const access_token = localStorage.getItem("access_token");
-  const [purchased, setPurchase] = useState({});
-  const [billInfo, setBillInfo] = useState([
-    // {
-    //   title: "Product 1",
-    //   price: 1000,
-    //   number: 2,
-    //   review: false,
-    // },
-    // {
-    //   title: "Product 2",
-    //   price: 2000,
-    //   number: 1,
-    //   review: {
-    //     comment: "Good product!",
-    //     rating: 4,
-    //     .....
-    //   },
-    // },
-  ]);
+  const [billInfo, setBillInfo] = useState([]);
+  const [reviews, setReviews] = useState([]);
 
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
 
   const [isAddReviewVisible, setAddReviewVisible] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
+
   const getPurchaseHistory = async () => {
     try {
       const response = await axios.get("http://localhost:8080/account/bought", {
         headers: {
           Authorization: `Bearer ${access_token}`,
         },
-        // withCredentials: true,  // Include cookies in the request
       });
-      console.log("data of purchase history: ", response.data);
-      setPurchase(response.data);
-      const { billInfo, review } = response.data;
-      console.log("billInfo: ", billInfo);
-      console.log("review: ", review);
-      const updatedBillInfo = billInfo.map((item) => {
-        console.log("item id", item.productSizeID.productID.productID);
+
+      const { billInfo: rawBillInfo, review } = response.data;
+      setReviews(review);
+
+      const updatedBillInfo = rawBillInfo.map((item) => {
+        const formattedDate = dayjs(item.date).format("YYYY-MM-DD HH:mm:ss");
+
         const relatedReview = review.find(
-          (rev) =>
-            rev.productID.productID === item.productSizeID.productID.productID
+          (rev) => rev.productID && rev.productID.productID === item.productID
         );
 
         return {
-          title: item.productSizeID.productID.title,
-          price: item.productSizeID.productID.price,
+          title: item.productTitle,
+          price: item.cost,
+          productID: item.productID,
+          date: formattedDate,
           number: item.number,
           review: relatedReview ? relatedReview : false,
         };
       });
+
       setBillInfo(updatedBillInfo);
     } catch (error) {
-      if (error.response) {
-        console.log("Error response: ");
-        console.log("Respone data: ", error.response.data);
-        console.log("Respone data: ", error.response.status);
-        console.log("Respone data: ", error.response.headers);
-      } else if (error.request) {
-        console.log("Error request: ", error.request);
-      } else {
-        console.log("Error message:", error.message);
-      }
-      console.log("Error config:", error.config);
+      console.error("Error fetching purchase history:", error);
     }
   };
 
-  const handleSubmitReview = async (comment,accountID) => {
+  const handleSubmitReview = async (comment, rating) => {
     try {
-      await axios.post(`http://localhost:8080/review`, {
-        productId: selectedProductId,
-        comment,
-        accountID: accountID,
-      }, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
+      await axios.post(
+        "http://localhost:8080/review",
+        {
+          productID: { productID: selectedProductId },
+          comment,
+          rating,
         },
-      });
-      // Refresh purchase history after submitting review
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
       getPurchaseHistory();
       handleAddReviewClose();
     } catch (error) {
-      console.log("Error submitting review: ", error);
+      console.error("Error submitting review:", error);
+    }
+  };
+
+  const handleUpdateReview = async (comment, rating) => {
+    try {
+      await axios.post(
+        "http://localhost:8080/review",
+        {
+          productID: selectedProductId,
+          comment,
+          rating,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      getPurchaseHistory();
+      handleModalClose();
+    } catch (error) {
+      console.error("Error updating review:", error);
     }
   };
 
   useEffect(() => {
     getPurchaseHistory();
-    console.log(billInfo);
   }, []);
 
   const handleReviewClick = (item) => {
     setSelectedReview(item);
+    setSelectedProductId(item.productID);
     setModalVisible(true);
   };
 
   const handleModalClose = () => {
     setModalVisible(false);
     setSelectedReview(null);
+    setSelectedProductId(null);
   };
 
   const handleAddReviewClick = (productId) => {
@@ -114,48 +116,67 @@ const PurchaseHistory = () => {
     setAddReviewVisible(false);
     setSelectedProductId(null);
   };
-
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      await axios.delete(`http://localhost:8080/review/${reviewId}`, {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      });
+      getPurchaseHistory(); 
+    } catch (error) {
+      console.error("Error deleting review:", error);
+    }
+  };
   return (
     <div>
-      <h2 style={{margin:'16px 8px'}}>Lịch sử mua hàng</h2>
+      <h3>Lịch sử mua hàng</h3>
       <table>
         <thead>
           <tr>
             <th>#</th>
             <th>Sản phẩm</th>
             <th>Số lượng</th>
-            <th>Giá</th>
+            <th>Đơn Giá</th>
+            <th>Thời gian</th>
             <th>Đánh giá</th>
           </tr>
         </thead>
         <tbody>
           {billInfo.map((bill, index) => (
             <tr key={index}>
-              <td>{index}</td>
-              <td>{bill.title}</td>
+              <td>{index + 1}</td>
+              <td>
+                <a href={`/detail/${bill.productID}`} className="linkToProduct">
+                  {bill.title}
+                </a>
+              </td>
               <td>{bill.number}</td>
               <td>{bill.price}</td>
+              <td>{bill.date}</td>
               <td>
                 {bill.review ? (
-                  <a style={{color: "blue", cursor: "pointer"}} onClick={() => handleReviewClick(bill.review.comment)}>
-                    Xem
-                  </a>
+                  <button onClick={() => handleReviewClick(bill.review)}>
+                    Chỉnh sửa
+                  </button>
                 ) : (
-                  <a style={{color: "orange",cursor: "pointer"}} onClick={() => handleAddReviewClick(bill.productId)}>Đánh giá</a>
+                  <button onClick={() => handleAddReviewClick(bill.productID)}>
+                    Đánh giá
+                  </button>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* Modal hiển thị review */}
-      <ModalReadReview
+      <ModalEditReview
         isVisible={isModalVisible}
         onClose={handleModalClose}
-        content={selectedReview}
+        review={selectedReview}
+        onSubmit={handleUpdateReview}
+        onDelete={handleDeleteReview}
       />
-            {/* Modal thêm review */}
-            <ModalAddReview
+      <ModalAddReview
         isVisible={isAddReviewVisible}
         onClose={handleAddReviewClose}
         onSubmit={handleSubmitReview}
@@ -163,9 +184,56 @@ const PurchaseHistory = () => {
     </div>
   );
 };
-export default PurchaseHistory;
 
-const ModalReadReview = ({ isVisible, onClose, content }) => {
+const ModalEditReview = ({
+  isVisible,
+  onClose,
+  review,
+  onSubmit,
+  onDelete,
+}) => {
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState("0");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (review) {
+      setComment(review.comment);
+      setRating(review.rating.toString());
+    }
+  }, [review]);
+
+  const handleRatingChange = (e) => {
+    const value = Number(e.target.value);
+    if (value < 0 || value > 5) {
+      setError("Điểm đánh giá phải nằm trong khoảng từ 0 đến 5");
+    } else {
+      setError("");
+      setRating(value);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!error) {
+      if (comment.trim() === "") {
+        setError("Đánh giá không được để trống");
+        return;
+      }
+      onSubmit(comment, rating);
+      setComment("");
+      setRating("0");
+      setError("");
+    }
+  };
+
+  const handleDelete = () => {
+    console.log("Deleting review with ID:", review.reviewID);
+    if (review && review.reviewID) {
+      onDelete(review.reviewID);
+      onClose(); 
+    }
+  };
+
   if (!isVisible) {
     return null;
   }
@@ -173,20 +241,58 @@ const ModalReadReview = ({ isVisible, onClose, content }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-container">
-        <h3>Đánh giá sản phẩm</h3>
-        <p>{content ? content : "Không có đánh giá nào."}</p>
-        <button onClick={onClose}>Đóng</button>
+        <h3>Chỉnh sửa đánh giá sản phẩm</h3>
+        <div className="rating-input">
+          <label>Rating (0 - 5): </label>
+          <input
+            type="number"
+            value={rating}
+            onChange={handleRatingChange}
+            min="0"
+            max="5"
+          />
+        </div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Nhập đánh giá của bạn..."
+        ></textarea>
+        <button onClick={handleSubmit}>Gửi</button>
+        <button style={{marginLeft:"10px"}} onClick={onClose}>Đóng</button>
+        <button className="buttonDelete" onClick={handleDelete}>Xóa</button> 
+
       </div>
     </div>
   );
 };
 
 const ModalAddReview = ({ isVisible, onClose, onSubmit }) => {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState("0");
+  const [error, setError] = useState("");
+
+  const handleRatingChange = (e) => {
+    const value = Number(e.target.value);
+    if (value < 0 || value > 5) {
+      setError("Điểm đánh giá phải nằm trong khoảng từ 0 đến 5");
+    } else {
+      setError("");
+      setRating(value);
+    }
+  };
 
   const handleSubmit = () => {
-    onSubmit(comment);
-    setComment(''); // Reset form after submit
+    if (!error) {
+      if (comment.trim() === "") {
+        setError("Đánh giá không được để trống");
+        return;
+      }
+      onSubmit(comment, rating);
+      setComment("");
+      setRating("0");
+      setError("");
+    }
   };
 
   if (!isVisible) {
@@ -197,14 +303,27 @@ const ModalAddReview = ({ isVisible, onClose, onSubmit }) => {
     <div className="modal-overlay">
       <div className="modal-container">
         <h3>Thêm đánh giá sản phẩm</h3>
+        <div className="rating-input">
+          <label>Rating (0 - 5): </label>
+          <input
+            type="number"
+            value={rating}
+            onChange={handleRatingChange}
+            min="0"
+            max="5"
+          />
+        </div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <textarea
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Nhập đánh giá của bạn..."
         ></textarea>
         <button onClick={handleSubmit}>Gửi</button>
-        <button onClick={onClose}>Đóng</button>
+        <button style={{marginLeft:"10px"}} onClick={onClose}>Đóng</button>
       </div>
     </div>
   );
 };
+
+export default PurchaseHistory;
