@@ -38,14 +38,13 @@ const App = () => {
     <Router>
        <Header /> 
       <Routes>
-        <Route path='/home' element={<Home/>}></Route>
-        <Route path="/" element={<J4M />} />
+        <Route path='/' element={<Home/>}></Route>
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forgot" element={<Forgot />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/PreBuy" element={<PreBuy />} />
+        <Route path="/preBuy" element={<PreBuy />} />
         <Route path="/AdminBill" element={<AdminBill />} />
         <Route path="/AdminBanner" element={<AdminBanner />} />
         <Route path="/AdminAccount" element={<AdminAccount/>} />

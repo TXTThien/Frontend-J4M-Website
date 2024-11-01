@@ -3,7 +3,7 @@ import './footer.css'; // Import custom CSS for styling
 
 const Footer = () => {
   return (
-    <footer className="footer">
+    <footer id='footer' className="footer">
       <div className="footer-container">
         {/* Top Section with contact and social links */}
         <div className="footer-top">

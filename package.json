@@ -10,7 +10,12 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+<<<<<<< HEAD
     "chart.js": "^4.4.6",
+=======
+    "chart.js": "^4.4.5",
+    "dayjs": "^1.11.13",
+>>>>>>> f7a63306a8ab548a3f60272268958920767fbd05
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",

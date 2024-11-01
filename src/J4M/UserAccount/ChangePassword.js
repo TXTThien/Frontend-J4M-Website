@@ -1,18 +1,27 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Thêm import này
 
 const ChangePassword = () => {
-  const [passwordForm, setPasswordForm] = useState({});
-  const [error, setError] = useState("");
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
+  const [error, setError] = useState({});
   const access_token = localStorage.getItem("access_token");
+  const navigate = useNavigate(); // Khởi tạo useNavigate
+
   const validatePassword = () => {
     let formErrors = {};
+    if (!passwordForm.currentPassword) {
+      formErrors.currentPassword = "Vui lòng nhập mật khẩu hiện tại.";
+    }
     if (passwordForm.newPassword.length < 8) {
-      return (formErrors.currentPassword = "Mật khẩu phải có ít nhất 8 ký tự.");
+      formErrors.newPassword = "Mật khẩu mới phải có ít nhất 8 ký tự.";
     }
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      return (formErrors.confirmPassword =
-        "Mật khẩu mới và xác nhận mật khẩu không trùng khớp.");
+      formErrors.confirmPassword = "Mật khẩu mới và xác nhận mật khẩu không trùng khớp.";
     }
     return formErrors;
   };
@@ -25,67 +34,63 @@ const ChangePassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const formErrors = validatePassword();
-    if (Object.keys(formErrors)?.length > 0) {
+    if (Object.keys(formErrors).length > 0) {
       setError(formErrors);
       return;
     }
-    console.log("form", passwordForm);
-    handleChangePassword();
+    
+    console.log("Password Form Data:", passwordForm); // Kiểm tra dữ liệu trước khi gửi
     setError({});
+    handleChangePassword();
   };
-
+  
   const handleChangePassword = async () => {
     try {
       const response = await axios.put(
         "http://localhost:8080/account/changepassword",
-        {},
         {
-          params: {
-            conpass: passwordForm.currentPassword,
-            newpass: passwordForm.newPassword,
-          },
+          curpass: passwordForm.currentPassword,
+          newpass: passwordForm.newPassword,
+        },
+        {
           headers: {
             Authorization: `Bearer ${access_token}`,
+            'Content-Type': 'application/json', // Đảm bảo gửi đúng định dạng
           },
-          // withCredentials: true,  // Include cookies in the request
         }
       );
-      //   console.log("data of response: ", response.data);
+      
       alert(response.data);
+      // Xóa access_token khỏi localStorage
+      localStorage.removeItem("access_token");
+      // Chuyển hướng tới trang /login
+      navigate("/login");
     } catch (error) {
       if (error.response) {
-        console.log("Error response: ");
-        console.log("Respone data: ", error.response.data);
+        console.log("Error response:", error.response);
         setError({ message: error.response.data });
-        console.log("Respone data: ", error.response.status);
-        console.log("Respone data: ", error.response.headers);
       } else if (error.request) {
-        console.log("Error request: ", error.request);
+        console.log("Error request:", error.request);
       } else {
         console.log("Error message:", error.message);
       }
-      console.log("Error config:", error.config);
     }
   };
-
+  
   return (
     <>
-      <h2 style={{ margin: "16px 8px" }}>Đổi mặt khẩu</h2>
-      <form onSubmit={handleSubmit} style={{padding:"0 8px"}}>
-
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <label htmlFor="currentPassword">Current Password</label>
           <input
             id="currentPassword"
             name="currentPassword"
             type="password"
-            value={
-              passwordForm.currentPassword ? passwordForm.currentPassword : ""
-            }
+            value={passwordForm.currentPassword}
             onChange={handleChange}
             required
           />
-          {error.currentPassword && <p>{error.currentPassword}</p>}
+          {error.currentPassword && <p style={{ color: "red" }}>{error.currentPassword}</p>}
         </div>
         <div className="space-y-2">
           <label htmlFor="newPassword">New Password</label>
@@ -93,11 +98,11 @@ const ChangePassword = () => {
             id="newPassword"
             name="newPassword"
             type="password"
-            value={passwordForm.newPassword ? passwordForm.newPassword : ""}
+            value={passwordForm.newPassword}
             onChange={handleChange}
             required
           />
-          {error.newPassword && <p>{error.newPassword}</p>}
+          {error.newPassword && <p style={{ color: "red" }} >{error.newPassword}</p>}
         </div>
         <div className="space-y-2">
           <label htmlFor="confirmPassword">Confirm New Password</label>
@@ -105,18 +110,17 @@ const ChangePassword = () => {
             id="confirmPassword"
             name="confirmPassword"
             type="password"
-            value={
-              passwordForm.confirmPassword ? passwordForm.confirmPassword : ""
-            }
+            value={passwordForm.confirmPassword}
             onChange={handleChange}
             required
           />
-          {error.confirmPassword && <p>{error.confirmPassword}</p>}
+          {error.confirmPassword && <p style={{ color: "red" }}>{error.confirmPassword}</p>}
         </div>
         <button type="submit">Đổi mật khẩu</button>
-        {error.message && <p>{error.message}</p>}
+        {error.message  && <p style={{ color: "red" }}>{error.message}</p>}
       </form>
     </>
   );
 };
+
 export default ChangePassword;
