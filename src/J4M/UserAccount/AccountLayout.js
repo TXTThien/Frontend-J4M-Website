@@ -54,9 +54,9 @@ const AccountLayout = () => {
       <div className="account-nav">
         <h2 style={{display:"flex", margin: 0, padding: "8px 4px", alignItems: "center"}}>
           <img src={userImg} alt="user" />
-          <div style={{display : "flex", flexDirection: "column", marginLeft: "8px"}}>
+          <div style={{textAlign: "left",display : "flex", flexDirection: "column", marginLeft: "10px"}}>
             <span style={{fontSize: 18, color: "#888", fontWeight: "normal"}}>#{accountID}</span>
-            <span>{payload?.sub} </span>
+            <span>{payload?.sub}</span>
           </div>
         </h2>
         <button onClick={() => navigate("/account")}>Tài khoản</button>
