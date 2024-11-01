@@ -32,6 +32,7 @@ import Footer from './Component/Footer/footer';
 import PreBuy from './J4M/UserAccount/PreBuy';
 import PaymentFailure from './J4M/UserAccount/PaymentFailure';
 import PaymentSuccess from './J4M/UserAccount/PaymentSuccess';
+import ProductList from './Component/ProductList/ProductList';
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
           <Route path="changepassword" element={<ChangePassword />} />
           <Route path="orders" element={<PurchaseHistory/>}/>
         </Route>
+        <Route path="/product" element={<ProductList />} />
       </Routes>
       <Footer/>
     </Router>
