@@ -1,0 +1,336 @@
+.menu ul#main-menu {
+  margin-left: -45px;
+  margin-top: 5px;
+  font-size: 10px;
+}
+.menu ul#main-menu li {
+  display: inline-block;
+  padding: 0 10px;
+  color: #9ca0a3;
+}
+
+.menu ul#main-menu li a {
+  text-decoration: none;
+  color: inherit;
+  padding: 5px 0;
+  display: inline-block;
+  font-size: 14px;
+}
+
+.menu ul#main-menu li a:hover {
+  color: black;
+  font-weight: 500;
+}
+.product-container-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.col-6 {
+  flex-basis: 50%;
+  max-width: 600px;
+}
+.wrapbox-gallery {
+  width: 100%;
+}
+
+.wrapbox-image {
+  position: relative;
+  width: 100%;
+}
+
+.productGallery_slider {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.product-gallery__item img {
+  max-height: 600px;
+  width: auto;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.productGallery_thumb {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  width: 100%; /* Hoặc thiết lập chiều rộng cụ thể */
+  overflow: hidden;
+}
+
+.thumbnail-item {
+  height: 80px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  width: auto;
+  transition: border-color 0.3s ease;
+}
+
+.thumbnail-item.active {
+  border-color: #ffa5a5; /* Màu viền khi ảnh thumbnail đang được chọn */
+}
+
+.product-thumb__item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Giúp hình ảnh hiển thị phù hợp trong khung */
+  border-radius: 5px;
+}
+.zoom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.zoomed-image-container {
+  position: relative;
+}
+.zoomed-image-container img {
+  max-height: 1000px;
+  width: auto;
+}
+.zoomed-image {
+  max-width: 90%;
+  max-height: 90%;
+}
+.wrapbox-image .slick-dots {
+  display: none !important;
+}
+.productGallery_thumb button {
+  display: none !important;
+}
+.productGallery_slider button {
+  display: none !important;
+}
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+}
+.close-button:hover {
+  background-color: rgb(182, 39, 39);
+  color: #ffffff;
+}
+
+.grid-col-6 .infoProduct {
+  margin-left: 20px;
+  top: 0;
+}
+
+.productSizes {
+  list-style: none; /* Bỏ dấu đầu dòng */
+  padding: 0; /* Bỏ khoảng cách */
+}
+
+.productSizes li {
+  display: inline-block;
+  margin: 5px;
+  padding: 10px 15px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.productSizes li.selected {
+  background-color: #e95252; /* Màu nền khi được chọn */
+  color: white; /* Màu chữ khi được chọn */
+  border-color: #811212; /* Đường viền màu khi được chọn */
+}
+
+.Number {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Khoảng cách giữa các phần tử */
+}
+
+.Number h4 {
+  margin: 0; /* Loại bỏ margin để tránh khoảng cách không cần thiết */
+  font-weight: normal;
+}
+
+.numberInput {
+  width: 50px; /* Đặt độ rộng cho input */
+  text-align: center;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.decrease-btn,
+.increase-btn {
+  padding: 5px 10px;
+  font-size: 18px;
+  background-color: #ff7a7a;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+.increase-btn.disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+.increase-btn.disabled:hover {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+.decrease-btn:hover,
+.increase-btn:hover {
+  background-color: #9b0404;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.detail {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.productinfodetail {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #999;
+  max-height: 10px;
+}
+
+.productinfodetail h6 {
+  margin: 0;
+  font-weight: normal;
+  color: #555;
+  max-height: fit-content;
+  padding-right: 50px;
+}
+
+.productinfodetail h4 {
+  font-weight: bold;
+  color: #222;
+}
+
+.infodetail {
+  display: flex;
+  align-items: center;
+}
+
+.infoDanhMuc {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 5px; /* Giảm khoảng cách giữa các danh mục */
+}
+
+.infoDanhMuc li {
+  display: flex;
+  align-items: center;
+}
+
+.infoDanhMuc li a {
+  color: #0073e6;
+  text-decoration: none;
+}
+
+.infoDanhMuc li a:hover {
+  color: #005bb5;
+}
+
+.icon-arrow {
+  width: 12px; /* Điều chỉnh kích thước icon */
+  height: auto;
+  margin: 0 4px; /* Thu nhỏ khoảng cách icon */
+  vertical-align: middle;
+}
+
+li {
+  display: inline;
+}
+
+h6.productinfodetail,
+h4.infodetail {
+  display: flex;
+  align-items: center;
+}
+
+h6.productinfodetail h4 {
+  margin-left: 8px;
+}
+
+.linkTo {
+  text-decoration: none;
+  color: #0073e6;
+}
+
+.linkTo:hover {
+  color: #005bb5;
+}
+h5 {
+  font-size: 16px; /* Kích thước chữ cho mô tả */
+  color: #222; /* Màu sắc cho mô tả */
+  line-height: 1.5; /* Chiều cao dòng cho mô tả */
+  margin: 0; /* Xóa margin mặc định */
+}
+
+.star {
+  font-size: 24px; /* Kích thước sao, bạn có thể thay đổi tùy thích */
+  margin-right: 4px; /* Khoảng cách giữa các sao */
+}
+
+.star.full {
+  color: #ff2a0e; /* Màu vàng cho sao đầy */
+}
+
+.star.half {
+  color: #ff2a0e; /* Màu vàng cho nửa sao */
+}
+
+.star.empty {
+  color: #aaaaaa; /* Màu xám cho sao trống */
+}
+
+.comment.star.full {
+  font-size: 14px;
+  color: #c95849;
+}
+.comment.star.half {
+  font-size: 14px;
+  color: #c95849;
+}
+
+.comment.star.empty {
+  font-size: 14px;
+  color: #aaaaaa;
+}
+
+.other1 {
+  width: 100%; /* Đặt để h1 chiếm toàn bộ chiều rộng */
+  margin-bottom: 20px; /* Khoảng cách giữa h1 và các sản phẩm */
+  text-align: center; /* Canh giữa */
+}

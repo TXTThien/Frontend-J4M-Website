@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect  } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faCartShopping } from "@fortawesome/free-solid-svg-icons";
@@ -25,6 +25,37 @@ const Header = () => {
       console.log("Đăng nhập thất bại:", error);
     }
   };
+  const accesstoken = localStorage.getItem("access_token")
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      if (accesstoken) {
+        try {
+          const response = await axios.get("http://localhost:8080/prebuy", {
+            headers: {
+              Authorization: `Bearer ${accesstoken}`,
+              "Account-ID": accountId,
+            },
+            withCredentials: true,
+          });
+
+          if (response.status === 200) {
+            const { cart } = response.data;
+            setCartCount(cart.length);
+          }
+
+          if (response.data.redirectUrl) {
+            window.location.href = response.data.redirectUrl;
+          }
+        } catch (error) {
+          console.log("Có lỗi xảy ra khi lấy giỏ hàng:", error);
+        }
+      }
+    };
+
+    fetchCartData();
+  }, [accesstoken, accountId]);
+
 
   const handlePrebuy = async() => {
     try {
@@ -119,7 +150,7 @@ const Header = () => {
         </button>
         <button className="cart-button" onClick={handlePrebuy}>
           <FontAwesomeIcon icon={faCartShopping} />
-          <span className="cart-count">{cartCount > 0 ? cartCount : 0}</span>
+          <span className="cart-count">{cartCount}</span>
         </button>
       </div>
     </header>

@@ -52,7 +52,6 @@ const PreBuy = () => {
     }
   }, [accesstoken, navigate]);
   
-  // Thêm useEffect để lấy discount
   useEffect(() => {
     if (accesstoken) {
       fetch('http://localhost:8080/prebuy', {
