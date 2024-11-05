@@ -8,13 +8,14 @@ import deleteicon from "./Image/deleteicon.png";
 const PreBuy = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
-  const [discounts, setDiscounts] = useState([]); // State để lưu trữ discount
+  const [discounts, setDiscounts] = useState([]); 
   const [error, setError] = useState(null);
   const accesstoken = localStorage.getItem('access_token');
-  const [selectedDiscount, setSelectedDiscount] = useState(null); // State để lưu mã giảm giá đã chọn
-  const [appliedDiscount, setAppliedDiscount] = useState(0); // State để lưu số tiền giảm giá đã áp dụng
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash"); // State để lưu phương thức thanh toán
-  const [errorMessages, setErrorMessages] = useState({}); // State để lưu lỗi cho từng sản phẩm
+  const [selectedDiscount, setSelectedDiscount] = useState(null); 
+  const [appliedDiscount, setAppliedDiscount] = useState(0); 
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cash"); 
+  const [errorMessages, setErrorMessages] = useState({}); 
+  const [sizeChoose, setSizeChoose] = useState(''); // Khởi tạo mặc định
 
   useEffect(() => {
     if (accesstoken) {
@@ -30,16 +31,20 @@ const PreBuy = () => {
         return response.json();
       })
       .then((data) => {
-        const itemsWithSelectedSize = data.cart.map(item => ({
-          ...item,
-          selectedSize: item.selectedSize || item.sizes[0],
-          selected: false,
-        }));
+        const itemsWithSelectedSize = data.cart.map(item => {
+          const savedItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+          const savedItem = savedItems.find(saved => saved.cartID === item.cartID);
+          return {
+            ...item,
+            selectedSize: savedItem ? savedItem.selectedSize : (item.selectedSize || item.sizes[0]),
+            selected: false,
+          };
+        });
         
         setCartItems(itemsWithSelectedSize);
         setDiscounts(data.discount || []);
-        
-        // Store fetched cart items and discounts in localStorage
+        console.log(cartItems)
+
         localStorage.setItem('cartItems', JSON.stringify(itemsWithSelectedSize));
         localStorage.setItem('discounts', JSON.stringify(data.discount || []));
       })
@@ -51,6 +56,7 @@ const PreBuy = () => {
       navigate('/login');
     }
   }, [accesstoken, navigate]);
+  
   
   useEffect(() => {
     if (accesstoken) {
@@ -76,15 +82,12 @@ const PreBuy = () => {
   }, [accesstoken]);
 
   const handleSizeChange = (cartID, selectedSize) => {
-    const cartItem = cartItems.find(item => item.cartID === cartID);
-    if (cartItem) {
-      const updatedItems = cartItems.map(item =>
+    const updatedItems = cartItems.map(item =>
         item.cartID === cartID ? { ...item, selectedSize } : item
-      );
-      setCartItems(updatedItems);
-      localStorage.setItem('cartItems', JSON.stringify(updatedItems));
-      updateCart(cartID, cartItem.number, selectedSize);
-    }
+    );
+    setCartItems(updatedItems);
+    localStorage.setItem('cartItems', JSON.stringify(updatedItems)); // Lưu trữ kích thước đã chọn vào localStorage
+    updateCart(cartID, updatedItems.find(item => item.cartID === cartID).number, selectedSize);
   };
 
   const handleQuantityChange = (cartID, quantity) => {
@@ -391,19 +394,19 @@ const totalPayment = totalPrice - discountAmount;
                         Giá: {(item.productPrice * item.number).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")} VNĐ
                       </p>
                       <label className="prebuy-product-size-label">
-                        Kích thước:
-                        <select
-                          value={item.selectedSize}
-                          onChange={(e) => handleSizeChange(item.cartID, e.target.value)}
-                          className="prebuy-product-size-select"  
-                          style={{ marginLeft: '5px' }}
-                        >
-                          {item.sizes.map((size, index) => (
-                            <option key={size} value={size}>
-                              {size}
-                            </option>
-                          ))}
-                        </select>
+                      Kích thước:
+                      <select
+                        value={item.sizeChoose || ''} 
+                        onChange={(e) => handleSizeChange(item.cartID, e.target.value)}
+                        className="prebuy-product-size-select"  
+                        style={{ marginLeft: '5px' }}
+                      >
+                        {item.sizes.map((sizeName, index) => (
+                          <option key={index} value={sizeName}>
+                            {sizeName}
+                          </option>
+                        ))}
+                      </select>
                       </label>
                       <p className="prebuy-product-stock" style={{ fontSize: '1em', color: '#999', marginTop: '5px' }}>
                         Tồn kho: {item.stock[item.sizes.indexOf(item.selectedSize)]}
