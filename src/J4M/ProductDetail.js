@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Grid from "@mui/material/Grid";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -25,6 +26,9 @@ const ProductDetail = () => {
   const [selectedSizeIndex, setSelectedSizeIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
+  const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -63,18 +67,63 @@ const ProductDetail = () => {
 
     fetchData();
   }, [id]);
-
+  useEffect(() => {
+    setQuantity(1);
+  }, [product]);
   const handleBuyNow = async () => {
     try {
-      const token = localStorage.getItem("access_token"); // Lấy token từ localStorage hoặc nguồn lưu trữ khác
-      const productSizeID = productSizes[selectedSizeIndex].productSizeID
+      const token = localStorage.getItem("access_token");
+      const productSizeID = productSizes[selectedSizeIndex].productSizeID;
       const response = await axios.post(
         "http://localhost:8080/addToPrebuy",
         {
           productSizeID: productSizeID,
-          accountID: null, // Nếu không cần truyền `accountID`, có thể bỏ qua hoặc truyền `null`
-          status: null, // Truyền `null` nếu muốn backend tự gán `Status.Enable`
-          number: quantity, // Số lượng sản phẩm (quantity) mà người dùng đã chọn
+          accountID: null,
+          status: null,
+          number: quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      navigate("/prebuy");
+    } catch (error) {
+      if (error.response) {
+        console.error("Error adding to prebuy:", error.response.data);
+      } else {
+        console.error("Network or server error:", error.message);
+      }
+    }
+  };
+  const ModalSuccess = ({ isVisible, message, onClose }) => {
+    if (!isVisible) {
+      return null;
+    }
+
+    return (
+      <div className="modal-overlay">
+        <div className="modal-container">
+          <h3>Thông báo</h3>
+          <p>{message}</p>
+          <button onClick={onClose}>Đóng</button>
+        </div>
+      </div>
+    );
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const productSizeID = productSizes[selectedSizeIndex].productSizeID;
+      const response = await axios.post(
+        "http://localhost:8080/addToPrebuy",
+        {
+          productSizeID: productSizeID,
+          accountID: null,
+          status: null,
+          number: quantity,
         },
         {
           headers: {
@@ -83,14 +132,22 @@ const ProductDetail = () => {
         }
       );
 
-      console.log("Add to prebuy success:", response.data);
+      // Hiển thị thông báo thành công
+      setSuccessMessage("Sản phẩm đã được thêm vào giỏ hàng!");
+      setSuccessModalVisible(true);
+
+      // Có thể không cần điều hướng sau khi thêm vào giỏ hàng
     } catch (error) {
       if (error.response) {
-        console.error("Error adding to prebuy:", error.response.data);
+        console.error("Error adding to cart:", error.response.data);
       } else {
         console.error("Network or server error:", error.message);
       }
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setSuccessModalVisible(false);
   };
 
   useEffect(() => {
@@ -104,12 +161,11 @@ const ProductDetail = () => {
   }, [isZoomed]);
 
   useEffect(() => {
-    // Ensure quantity does not exceed the stock of the selected size
     const maxStock = productSizes[selectedSizeIndex]?.stock || 0;
     if (quantity > maxStock) {
       setQuantity(maxStock);
     }
-  }, [selectedSizeIndex, productSizes]); // Run this effect whenever selected size or productSizes change
+  }, [selectedSizeIndex, productSizes]);
 
   const handleThumbnailClick = (index) => {
     setActiveIndex(index);
@@ -117,6 +173,7 @@ const ProductDetail = () => {
   };
 
   const handleSizeChange = (index) => {
+    if (productSizes[selectedSizeIndex].stock === 0) setQuantity(1);
     setSelectedSizeIndex(index);
   };
 
@@ -281,7 +338,7 @@ const ProductDetail = () => {
             <div className="infoProduct">
               <h1 className="titleProduct">{product?.title}</h1>
               <h6>
-                <span>{avgScore.toFixed(1)}/5.00</span>{" "}
+                <span>{avgScore.toFixed(1)}/5.0</span>{" "}
                 <span className="star">★</span>
                 <span className="reviewLength">{reviews.length} Đánh giá</span>
               </h6>
@@ -302,21 +359,31 @@ const ProductDetail = () => {
                 </ul>
               </h3>
               <h4 className="Stock">
-                Còn lại: {productSizes[selectedSizeIndex]?.stock || 0}
+                {productSizes[selectedSizeIndex]?.stock > 0 ? (
+                  <>Còn lại: {productSizes[selectedSizeIndex]?.stock || 0}</>
+                ) : (
+                  <span style={{ color: "red" }}>Sản phẩm tạm hết hàng</span>
+                )}
               </h4>
 
               <div className="Number">
                 <h4>Số lượng: </h4>
-                <button onClick={handleDecrease} className="decrease-btn">
+                <button
+                  onClick={handleDecrease}
+                  className={`decrease-btn ${
+                    quantity >= maxStock ? "disabled" : ""
+                  }`}
+                  disabled={quantity >= maxStock}
+                >
                   -
                 </button>
                 <input
                   className="numberInput"
                   type="number"
                   value={quantity}
-                  onChange={handleChange}
                   min="1"
-                  max={maxStock}
+                  onChange={handleChange}
+                  onBlur={() => setQuantity(Math.min(quantity, maxStock))} // Điều chỉnh số lượng khi người dùng rời khỏi ô nhập
                 />
                 <button
                   onClick={handleIncrease}
@@ -330,10 +397,31 @@ const ProductDetail = () => {
               </div>
 
               <div className="buy">
-                <button className="addToCart">
+                <button
+                  className={`addToCart ${
+                    productSizes[selectedSizeIndex]?.stock === 0
+                      ? "disabled"
+                      : ""
+                  }`}
+                  onClick={handleAddToCart}
+                  disabled={productSizes[selectedSizeIndex]?.stock === 0}
+                >
                   <h4>Thêm vào giỏ hàng</h4>
                 </button>
-                <button className="buyNow" onClick={handleBuyNow}>
+                <ModalSuccess
+                  isVisible={isSuccessModalVisible}
+                  message={successMessage}
+                  onClose={handleSuccessModalClose}
+                />
+                <button
+                  className={`buyNow ${
+                    productSizes[selectedSizeIndex]?.stock === 0
+                      ? "disabled"
+                      : ""
+                  }`}
+                  onClick={handleBuyNow}
+                  disabled={productSizes[selectedSizeIndex]?.stock === 0} // Disable khi hết hàng
+                >
                   <h4>Mua ngay</h4>
                 </button>
               </div>
@@ -458,7 +546,7 @@ const ProductDetail = () => {
       <div className="container">
         <h1>ĐÁNH GIÁ SẢN PHẨM</h1>
         <div className="rating">{renderStars(avgScore)}</div>
-        <h3>{avgScore.toFixed(1)}/5</h3>
+        <h3>{avgScore.toFixed(1)}/5.0</h3>
         <h5>({reviews.length} đánh giá)</h5>
         <div className="comment-overview">
           <div className="cmt-view collapsed">

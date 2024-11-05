@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, {useEffect}from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom';
 import Home from './Component/Home/Home'
 import Login from './J4M/login';
 import Dashboard from './J4M//AdminDashboard/giaodien';
@@ -32,7 +32,7 @@ import Footer from './Component/Footer/footer';
 import PreBuy from './J4M/UserAccount/PreBuy';
 import PaymentFailure from './J4M/UserAccount/PaymentFailure';
 import PaymentSuccess from './J4M/UserAccount/PaymentSuccess';
-
+import ProductDetail from './J4M/ProductDetail';
 const App = () => {
   const navigate = useNavigate();
 
@@ -90,7 +90,6 @@ const App = () => {
           <Route path="changepassword" element={<ChangePassword />} />
           <Route path="orders" element={<PurchaseHistory />} />
         </Route>
-        <Route path="/product" element={<ProductList />} />
       </Routes>
       <Footer />
     </>
