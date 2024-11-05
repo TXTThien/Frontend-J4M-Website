@@ -83,7 +83,7 @@ const PreBuy = () => {
 
   const handleSizeChange = (cartID, selectedSize) => {
     const updatedItems = cartItems.map(item =>
-        item.cartID === cartID ? { ...item, selectedSize } : item
+        item.cartID === cartID ? { ...item, sizeChoose: selectedSize } : item
     );
     setCartItems(updatedItems);
     localStorage.setItem('cartItems', JSON.stringify(updatedItems)); // Lưu trữ kích thước đã chọn vào localStorage
