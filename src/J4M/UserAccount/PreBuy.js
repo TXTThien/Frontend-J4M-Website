@@ -370,26 +370,51 @@ const PreBuy = () => {
   };
 
   const handleApplyDiscount = () => {
-    console.log("Selected Discount:", selectedDiscount); // Logging giá trị của selectedDiscount
-
     if (!selectedDiscount) {
-      alert("Vui lòng chọn mã giảm giá.");
-      return;
+        alert("Vui lòng chọn mã giảm giá.");
+        return;
     }
 
     const selectedDiscountObj = discounts.find(
-      (discount) => discount.discountID === selectedDiscount
+        (discount) => discount.discountID === selectedDiscount
     );
-    console.log("Selected Discount Object:", selectedDiscountObj); // Logging đối tượng giảm giá được chọn
+
+    console.log("Selected Discount CategoryID:", selectedDiscountObj.categoryID); 
+    console.log("Selected Discount ProductTypeID:", selectedDiscountObj.productTypeID); 
+
+    const selectedItems = cartItems.filter((item) => item.selected);
+
+    selectedItems.forEach((item) => {
+        console.log(`Product ID: ${item.productID}, CategoryID: ${item.categoryID}, ProductTypeID: ${item.productTypeID}`);
+    });
+
+    const isApplicable = selectedItems.some((item) => {
+        const isCategoryMatch = item.categoryID === selectedDiscountObj.categoryID.categoryID;
+
+        const isProductTypeMatch = item.productTypeID === selectedDiscountObj.productTypeID;
+
+        return isCategoryMatch || isProductTypeMatch; 
+    });
+
+    if (!isApplicable) {
+        setError("Khuyến mãi không áp dụng cho sản phẩm này.");
+        setAppliedDiscount(0);  
+        return;
+    }
 
     if (selectedDiscountObj) {
-      const totalPrice = calculateTotalPrice();
-      const discountAmount = totalPrice * selectedDiscountObj.discountPercent;
-      setAppliedDiscount(discountAmount);
+        const totalPrice = selectedItems.reduce(
+            (total, item) => total + item.productPrice * item.number,
+            0
+        );
+        const discountAmount = totalPrice * selectedDiscountObj.discountPercent;
+        setAppliedDiscount(discountAmount);
+        setError(null); 
     } else {
-      alert("Vui lòng chọn mã giảm giá hợp lệ.");
+        alert("Vui lòng chọn mã giảm giá hợp lệ.");
     }
-  };
+};
+
 
   const handleDiscountChange = (event) => {
     setSelectedDiscount(Number(event.target.value)); // Chuyển đổi sang số
@@ -538,6 +563,12 @@ const PreBuy = () => {
             <button onClick={handleApplyDiscount} className="prebuy-button">
               Áp dụng
             </button>
+            {error && (
+                <div className="error-popup">
+                    <span className="error-message">{error}</span>
+                    <span className="close-btn" onClick={() => setError(null)}>&times;</span>
+                </div>
+            )}
             <div className="prebuy-payment-options">
               <h3>Phương thức thanh toán</h3>
               <label className="prebuy-payment-option">
