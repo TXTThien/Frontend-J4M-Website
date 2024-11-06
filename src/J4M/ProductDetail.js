@@ -29,6 +29,9 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const [isSuccessModalVisible, setSuccessModalVisible] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [howManyBought, setHowManyBought] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const commentsPerPage = 5;
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,6 +44,7 @@ const ProductDetail = () => {
             imageList,
             productBrand,
             productSimilar,
+            howManyBought,
           } = response.data;
           setProduct(product);
           setReviews(reviews);
@@ -48,7 +52,8 @@ const ProductDetail = () => {
           setImageList(imageList);
           setProductBrand(productBrand);
           setProductSimilar(productSimilar);
-
+          setHowManyBought(howManyBought);
+          console.log(howManyBought);
           const totalScore = reviews.reduce(
             (acc, review) => acc + review.rating,
             0
@@ -70,6 +75,23 @@ const ProductDetail = () => {
   useEffect(() => {
     setQuantity(1);
   }, [product]);
+  const totalPages = Math.ceil(reviews.length / commentsPerPage);
+  const currentComments = reviews.slice(
+    (currentPage - 1) * commentsPerPage,
+    currentPage * commentsPerPage
+  );
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   const handleBuyNow = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -221,7 +243,7 @@ const ProductDetail = () => {
   };
 
   const thumbnailSliderSettings = {
-    slidesToShow: imageList.length,
+    slidesToShow: imageList.length > 4 ? 4 : imageList.length,
     slidesToScroll: 1,
     focusOnSelect: true,
     arrows: true,
@@ -242,6 +264,9 @@ const ProductDetail = () => {
     }
     return stars;
   };
+  const sortedReviews = reviews.sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
   const commentStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -301,7 +326,16 @@ const ProductDetail = () => {
                       data-image={image.imageURL}
                     >
                       <a className="product-gallery__item">
-                        <img src={image.imageURL} alt={product.title} />
+                        <img
+                          src={image.imageURL}
+                          alt={product.title}
+                          style={{
+                            height: "600px",
+                            width: "600px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                          }}
+                        />
                       </a>
                     </div>
                   </div>
@@ -338,11 +372,15 @@ const ProductDetail = () => {
             <div className="infoProduct">
               <h1 className="titleProduct">{product?.title}</h1>
               <h6>
-                <span>{avgScore.toFixed(1)}/5.0</span>{" "}
+                <span className="avgScore">{avgScore.toFixed(1)}/5.0</span>{" "}
                 <span className="star">★</span>
                 <span className="reviewLength">{reviews.length} Đánh giá</span>
+                <span className="bought">{howManyBought} Đã mua</span>
               </h6>
-              <h2 className="productPrice">{product.price} đ</h2>
+              <h2 className="productPrice" style={{ color: "#ff4c4c" }}>
+                {product.price} <span className="currency-symbol">đ</span>
+              </h2>
+
               <h3 className="Size">
                 Size:
                 <ul className="productSizes">
@@ -444,7 +482,7 @@ const ProductDetail = () => {
         )}
       </div>
 
-      <div className="container">
+      <div className="container" style={{ alignItems: "center" }}>
         <h1 className="detail">CHI TIẾT SẢN PHẨM</h1>
 
         <h6 className="productinfodetail">
@@ -494,53 +532,53 @@ const ProductDetail = () => {
           </h4>
         </h6>
 
-        {isExpanded && ( // Hiển thị thông tin nếu isExpanded là true
-          <>
-            <h6 className="productinfodetail">
-              Thương hiệu:
-              <h4 className="infodetail">
-                <Link
-                  to={`/product/sort/?brand=${product.brandID.brandID}`}
-                  className="linkTo"
-                >
-                  {product.brandID.brandName}
-                </Link>
-              </h4>
-            </h6>
-            <h6 className="productinfodetail">
-              Xuất xứ:
-              <h4 className="infodetail">
-                <Link
-                  to={`/product/sort/?origin=${product.originID.originID}`}
-                  className="linkTo"
-                >
-                  {product.originID.country}
-                </Link>
-              </h4>
-            </h6>
-            <h6 className="productinfodetail">
-              Chất liệu:
-              <h4 className="infodetail">{product.material}</h4>
-            </h6>
-            <h6 className="productinfodetail">
-              Các kích thước:
-              <h4 className="infodetail">
-                {productSizes.map((size, index) => (
-                  <span key={index}>
-                    {size.sizeID.sizeName}
-                    {index < productSizes.length - 1 && ", "}
-                  </span>
-                ))}
-              </h4>
-            </h6>
-            <h1 className="detail">MÔ TẢ SẢN PHẨM</h1>
-            <h5>{product.description}</h5>
-          </>
-        )}
+        <div className={`detail-content ${isExpanded ? "expanded" : ""}`}>
+          <h6 className="productinfodetail">
+            Thương hiệu:
+            <h4 className="infodetail">
+              <Link
+                to={`/product/sort/?brand=${product.brandID.brandID}`}
+                className="linkTo"
+              >
+                {product.brandID.brandName}
+              </Link>
+            </h4>
+          </h6>
+          <h6 className="productinfodetail">
+            Xuất xứ:
+            <h4 className="infodetail">
+              <Link
+                to={`/product/sort/?origin=${product.originID.originID}`}
+                className="linkTo"
+              >
+                {product.originID.country}
+              </Link>
+            </h4>
+          </h6>
+          <h6 className="productinfodetail">
+            Chất liệu:
+            <h4 className="infodetail">{product.material}</h4>
+          </h6>
+          <h6 className="productinfodetail">
+            Các kích thước:
+            <h4 className="infodetail">
+              {productSizes.map((size, index) => (
+                <span key={index}>
+                  {size.sizeID.sizeName}
+                  {index < productSizes.length - 1 && ", "}
+                </span>
+              ))}
+            </h4>
+          </h6>
+          <h1 className="detail">MÔ TẢ SẢN PHẨM</h1>
+          <h5>{product.description}</h5>
+        </div>
 
-        <button onClick={toggleDetails} className="toggle-details">
-          {isExpanded ? "Ẩn chi tiết" : "Xem thêm"}
-        </button>
+        <div className="button-container">
+          <button onClick={toggleDetails} className="toggle-details">
+            {isExpanded ? "Rút gọn" : "Xem thêm"}
+          </button>
+        </div>
       </div>
 
       <div className="container">
@@ -548,17 +586,37 @@ const ProductDetail = () => {
         <div className="rating">{renderStars(avgScore)}</div>
         <h3>{avgScore.toFixed(1)}/5.0</h3>
         <h5>({reviews.length} đánh giá)</h5>
+
         <div className="comment-overview">
           <div className="cmt-view collapsed">
-            {reviews.map((comment, index) => (
+            {sortedReviews.map((comment, index) => (
               <div className="comment_content" key={index}>
                 <div className="reviewer">{comment.accountID.name}</div>
+                <div className="time">
+                  {new Date(comment.date).toLocaleDateString("vi-VN")}
+                </div>
                 <div className="rating-comment">
                   {commentStars(comment.rating)}
                 </div>
+
                 <div className="comment_text">{comment.comment}</div>
               </div>
             ))}
+          </div>
+
+          <div className="pagination">
+            <button onClick={goToPreviousPage} disabled={currentPage === 1}>
+              Trang trước
+            </button>
+            <span>
+              Trang {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+            >
+              Trang sau
+            </button>
           </div>
         </div>
       </div>

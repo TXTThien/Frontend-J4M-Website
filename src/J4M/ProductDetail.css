@@ -365,3 +365,132 @@ h5 {
 {
   background-color: #ffd7ca;
 }
+
+.productPrice  {
+  height: 50px;
+  display: flex;
+  justify-content: center; 
+  align-items: center;  
+  background-color: #ffffff;
+  font-weight: 700;
+}
+.currency-symbol {
+  font-size: 0.6em;   
+  position: relative;
+  top: -0.2em;    
+  text-decoration: underline;  
+}
+.infoProduct .avgScore,
+.infoProduct .bought,
+.infoProduct .reviewLength{
+  font-size: 16px;
+  font-weight: 400;
+  color: #777777;
+}
+.infoProduct .star{
+  font-size: 17px;
+  color: #FF2A0E;
+  padding-right: 10px;
+  border-right: 1px solid  #7C7C7C
+}
+.infoProduct .reviewLength{
+  margin-left: 10px;
+  padding-right: 10px;
+  border-right: 1px solid  #7C7C7C
+}
+.infoProduct .bought{
+  margin-left: 10px;
+}
+
+.detail-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.detail-content.expanded {
+  max-height: 500px; 
+  transition: max-height 0.5s ease-in;
+}
+.button-container {
+  text-align: center; /* Căn giữa phần tử con là button */
+  width: 100%; /* Đảm bảo phần tử bao quanh chiếm toàn bộ chiều ngang */
+  margin-top: 20px; /* Khoảng cách từ phần nội dung đến button */
+}
+
+.toggle-details {
+  border-radius: 5px;
+  background-color: #F9F9F9;
+  border: 1px solid #417505;
+  color: #417505;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 133.156px;
+  font-size: 17px;
+}
+.toggle-details:hover{
+  background-color: #417505;
+  color: #ffffff;
+}
+.comment-overview {
+  padding: 20px;
+}
+
+.comment_content {
+  border: 1px solid #e0e0e0; /* Đường viền bao quanh */
+  border-radius: 8px; /* Bo góc */
+  padding: 15px; /* Khoảng cách bên trong */
+  margin-bottom: 15px; /* Khoảng cách giữa các comment */
+  background-color: #f9f9f9; /* Màu nền nhạt */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+
+.reviewer {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.rating-comment {
+  margin-bottom: 10px;
+}
+
+.comment_text {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 16px;
+  margin: 0 10px;
+}
+.time{
+  font-weight: 400;
+  font-size: 13px;
+  color: #777777;
+}

@@ -1,43 +1,49 @@
-import React, {useEffect}from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom';
-import Home from './Component/Home/Home'
-import Login from './J4M/login';
-import Dashboard from './J4M//AdminDashboard/giaodien';
-import Forgot from './J4M/Forgot';
-import SignUp from './J4M/SignUp';
-import VerifyOtp from './J4M/VerifyOtp';
-import J4M from './J4M/j4m';
-import AdminBill from './J4M/AdminDashboard/AdminBill';
-import AdminBanner from './J4M/AdminDashboard/AdminBanner';
-import AdminAccount from './J4M/AdminDashboard/AdminAccount';
-import AdminBillInfo from './J4M/AdminDashboard/AdminBillInfo';
-import AdminBrand from './J4M/AdminDashboard/AdminBrand';
-import AdminCart from './J4M/AdminDashboard/AdminCart';
-import AdminNews from './J4M/AdminDashboard/AdminNews';
-import AdminOrigin from './J4M/AdminDashboard/AdminOrigin';
-import AdminProduct from './J4M/AdminDashboard/AdminProduct';
-import AdminReview from './J4M/AdminDashboard/AdminReview';
-import AdminSize from './J4M/AdminDashboard/AdminSize';
-import AdminCategory from './J4M/AdminDashboard/AdminCategory';
-import AdminDiscount from './J4M/AdminDashboard/AdminDiscount';
-import AdminImage from './J4M/AdminDashboard/AdminImage';
-import AdminProductSize from './J4M/AdminDashboard/AdminProductSize';
-import AdminProductType from './J4M/AdminDashboard/AdminProductType';
-import AccountLayout from './J4M/UserAccount/AccountLayout';
-import Profile from './J4M/UserAccount/Profile';
-import ChangePassword from './J4M/UserAccount/ChangePassword';
-import PurchaseHistory from './J4M/UserAccount/PurchaseHistory';
-import Header from './Component/Header/header';
-import Footer from './Component/Footer/footer';
-import PreBuy from './J4M/UserAccount/PreBuy';
-import PaymentFailure from './J4M/UserAccount/PaymentFailure';
-import PaymentSuccess from './J4M/UserAccount/PaymentSuccess';
-import ProductDetail from './J4M/ProductDetail';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
+import Home from "./Component/Home/Home";
+import Login from "./J4M/login";
+import Dashboard from "./J4M//AdminDashboard/giaodien";
+import Forgot from "./J4M/Forgot";
+import SignUp from "./J4M/SignUp";
+import VerifyOtp from "./J4M/VerifyOtp";
+import J4M from "./J4M/j4m";
+import AdminBill from "./J4M/AdminDashboard/AdminBill";
+import AdminBanner from "./J4M/AdminDashboard/AdminBanner";
+import AdminAccount from "./J4M/AdminDashboard/AdminAccount";
+import AdminBillInfo from "./J4M/AdminDashboard/AdminBillInfo";
+import AdminBrand from "./J4M/AdminDashboard/AdminBrand";
+import AdminCart from "./J4M/AdminDashboard/AdminCart";
+import AdminNews from "./J4M/AdminDashboard/AdminNews";
+import AdminOrigin from "./J4M/AdminDashboard/AdminOrigin";
+import AdminProduct from "./J4M/AdminDashboard/AdminProduct";
+import AdminReview from "./J4M/AdminDashboard/AdminReview";
+import AdminSize from "./J4M/AdminDashboard/AdminSize";
+import AdminCategory from "./J4M/AdminDashboard/AdminCategory";
+import AdminDiscount from "./J4M/AdminDashboard/AdminDiscount";
+import AdminImage from "./J4M/AdminDashboard/AdminImage";
+import AdminProductSize from "./J4M/AdminDashboard/AdminProductSize";
+import AdminProductType from "./J4M/AdminDashboard/AdminProductType";
+import AccountLayout from "./J4M/UserAccount/AccountLayout";
+import Profile from "./J4M/UserAccount/Profile";
+import ChangePassword from "./J4M/UserAccount/ChangePassword";
+import PurchaseHistory from "./J4M/UserAccount/PurchaseHistory";
+import Header from "./Component/Header/header";
+import Footer from "./Component/Footer/footer";
+import PreBuy from "./J4M/UserAccount/PreBuy";
+import PaymentFailure from "./J4M/UserAccount/PaymentFailure";
+import PaymentSuccess from "./J4M/UserAccount/PaymentSuccess";
+import ProductDetail from "./J4M/ProductDetail";
+import Find from "./J4M/find";
 const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loginTime = localStorage.getItem('loginTime');
+    const loginTime = localStorage.getItem("loginTime");
     const expirationTime = 86400000;
 
     if (loginTime) {
@@ -45,12 +51,12 @@ const App = () => {
       const timeElapsed = currentTime - loginTime;
 
       if (timeElapsed > expirationTime) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('accountID');
-        localStorage.removeItem('loginTime');
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("accountID");
+        localStorage.removeItem("loginTime");
 
-        navigate('/login');
+        navigate("/login");
       }
     }
   }, [navigate]);
@@ -60,6 +66,7 @@ const App = () => {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/find" element={<Find />} />
         <Route path="/login" element={<Login />} />
         <Route path="/detail/:id" element={<ProductDetail />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -85,6 +92,7 @@ const App = () => {
         <Route path="/AdminProductType" element={<AdminProductType />} />
         <Route path="/PaymentFailure" element={<PaymentFailure />} />
         <Route path="/PaymentSuccess" element={<PaymentSuccess />} />
+        <Route path="/product"/>
         <Route path="/account" element={<AccountLayout />}>
           <Route index element={<Profile />} />
           <Route path="changepassword" element={<ChangePassword />} />
