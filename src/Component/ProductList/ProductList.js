@@ -40,7 +40,6 @@ export default function ProductList() {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:8080/product");
-        // setProducts(response.data.products);
         const { products, category, productType, brand, origin, size } =
           response.data;
         setCategory(category);
@@ -48,8 +47,6 @@ export default function ProductList() {
         setBrand(brand);
         setOrigin(origin);
         setSize(size);
-        // console.log(response.data);
-        // setProducts(products);
         setAllProducts(products);
         setProducts(products.slice(0, visibleCount));
       } catch (error) {
@@ -61,13 +58,11 @@ export default function ProductList() {
 
   useEffect(() => {
     sortProducts();
-    setProducts(allProducts.slice(0, visibleCount));
   }, [sortParams]);
-
+  
   useEffect(() => {
     setProducts(allProducts.slice(0, visibleCount));
-  }, [visibleCount]);
-
+  }, [allProducts, visibleCount]);
   return (
     <>
       <div className="product-list-container">
