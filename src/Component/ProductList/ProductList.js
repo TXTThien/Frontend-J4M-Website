@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./ProductList.css";
 export default function ProductList() {
   const sizePage = 20;
+  const navigate = useNavigate();
+  const location = useLocation();
   const [products, setProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -19,11 +22,67 @@ export default function ProductList() {
     brand: "",
   });
 
-  const filteredProductTypes = sortParams.category
-    ? productType.filter(
-        (pt) => pt.categoryID.categoryID === parseInt(sortParams.category)
-      )
-    : productType;
+  const filteredProductTypes = useMemo(
+    () =>
+      sortParams.category
+        ? productType.filter(
+            (pt) => pt.categoryID.categoryID === parseInt(sortParams.category)
+          )
+        : productType,
+    [sortParams.category, productType]
+  );
+
+  const handleSortParamChange = (param, value) => {
+    const newSortParams = {
+      ...sortParams,
+      [param]: value,
+      ...(param === "category" ? { productType: "" } : {}),
+    };
+
+    setSortParams(newSortParams);
+
+    const filteredParams = Object.fromEntries(
+      Object.entries(newSortParams).filter(([key, val]) => val !== "")
+    );
+
+    navigate({
+      pathname: location.pathname,
+      search: `?${new URLSearchParams(filteredParams).toString()}`,
+    });
+  };
+
+  const fetchProducts = async (initialSortParams) => {
+    try {
+      const response = await axios.get("http://localhost:8080/product");
+      const { products, category, productType, brand, origin, size } =
+        response.data;
+      setCategory(category);
+      setProductType(productType);
+      setBrand(brand);
+      setOrigin(origin);
+      setSize(size);
+      
+      if (initialSortParams) {
+        setSortParams(initialSortParams);
+      }else {
+        setAllProducts(products);
+        setProducts(products.slice(0, visibleCount));
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  const getQueryParams = () => {
+    const searchParams = new URLSearchParams(location.search);
+    return {
+      origin: searchParams.get("origin") || "",
+      size: searchParams.get("size") || "",
+      category: searchParams.get("category") || "",
+      productType: searchParams.get("productType") || "",
+      brand: searchParams.get("brand") || "",
+    };
+  };
 
   const sortProducts = async () => {
     try {
@@ -37,31 +96,21 @@ export default function ProductList() {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/product");
-        const { products, category, productType, brand, origin, size } =
-          response.data;
-        setCategory(category);
-        setProductType(productType);
-        setBrand(brand);
-        setOrigin(origin);
-        setSize(size);
-        setAllProducts(products);
-        setProducts(products.slice(0, visibleCount));
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-    fetchProducts();
-  }, []);
+    const initialSortParams = getQueryParams();
+    fetchProducts(initialSortParams);
+    console.log("1111");
+  }, [location.search]);
 
   useEffect(() => {
-    sortProducts();
+    if (Object.keys(sortParams).some((key) => sortParams[key] !== "")) {
+      sortProducts();
+    }
+    console.log("2222");
   }, [sortParams]);
-  
+
   useEffect(() => {
     setProducts(allProducts.slice(0, visibleCount));
+    console.log("3333");
   }, [allProducts, visibleCount]);
   return (
     <>
@@ -73,9 +122,7 @@ export default function ProductList() {
             <select
               id="category"
               value={sortParams.category}
-              onChange={(e) => {
-                setSortParams({ ...sortParams, category: e.target.value });
-              }}
+              onChange={(e) => handleSortParamChange("category", e.target.value)}
             >
               <option value="">All</option>
               {category.map((c) => (
@@ -91,9 +138,7 @@ export default function ProductList() {
             <select
               id="productType"
               value={sortParams.productType}
-              onChange={(e) =>
-                setSortParams({ ...sortParams, productType: e.target.value })
-              }
+              onChange={(e) => handleSortParamChange("productType", e.target.value)}
             >
               <option value="">All</option>
               {filteredProductTypes.map((pt) => (
@@ -108,9 +153,7 @@ export default function ProductList() {
             <select
               id="brand"
               value={sortParams.brand}
-              onChange={(e) =>
-                setSortParams({ ...sortParams, brand: e.target.value })
-              }
+              onChange={(e) => handleSortParamChange("brand", e.target.value)}
             >
               <option value="">All</option>
               {brand.map((b) => (
@@ -125,9 +168,7 @@ export default function ProductList() {
             <select
               id="origin"
               value={sortParams.origin}
-              onChange={(e) =>
-                setSortParams({ ...sortParams, origin: e.target.value })
-              }
+              onChange={(e) => handleSortParamChange("origin", e.target.value)}
             >
               <option value="">All</option>
               {origin.map((o) => (
@@ -142,9 +183,7 @@ export default function ProductList() {
             <select
               id="size"
               value={sortParams.size}
-              onChange={(e) =>
-                setSortParams({ ...sortParams, size: e.target.value })
-              }
+              onChange={(e) => handleSortParamChange("size", e.target.value)}
             >
               <option value="">All</option>
               {size.map((s) => (
@@ -156,25 +195,26 @@ export default function ProductList() {
           </div>
         </div>
 
-        <div className="product-grid">
-          {products.length > 0 &&
-            products.map((product) => (
-              <div key={product.productID} className="product-card">
-                <div className="img-wrapper">
-                  <img src={product.avatar} alt={product.title} />
+          <div className="product-grid">
+            {products.length > 0 &&
+              products.map((product) => (
+                <div key={product.productID} className="product-card">
+                  <div className="img-wrapper">
+                    <img src={product.avatar} alt={product.title} />
+                  </div>
+                  <h2>{product.title}</h2>
+                  <p>Price: ${product.price.toFixed(2)}</p>
+                  <p>Brand: {product.brandID.brandName}</p>
+                  <p>Origin: {product.originID.country}</p>
                 </div>
-                <h2>{product.title}</h2>
-                <p>Price: ${product.price.toFixed(2)}</p>
-                <p>Brand: {product.brandID.brandName}</p>
-                <p>Origin: {product.originID.country}</p>
-              </div>
-            ))}
-        </div>
-        <div className="load-button">
-          <button  onClick={() => setVisibleCount(visibleCount + sizePage)}>
-            Tải thêm
-          </button>
-        </div>
+              ))}
+          </div>
+
+          <div className="load-button">
+            <button onClick={() => setVisibleCount(visibleCount + sizePage)}>
+              Tải thêm
+            </button>
+          </div>
       </div>
     </>
   );
