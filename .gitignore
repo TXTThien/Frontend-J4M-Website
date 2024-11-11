@@ -22,7 +22,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/yarn.lock
 /package.json
 /J4M/Component/*
 /J4M/*
 !/J4M/UserAccount/
+!/J4M/Component/ProductList/
