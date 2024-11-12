@@ -22,17 +22,22 @@ const VerifyOtp = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    setLoading(true); // Bắt đầu quá trình xử lý
+    setLoading(true);
+    
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/auth/verify-otp`,
-        null,
-        { params: { username, otp, newPassword } }
+        "http://localhost:8080/api/v1/auth/verify-otp",
+        { username, otp, newPassword },  // Send data in the request body
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
       );
-
+  
       setSuccess("Mật khẩu đã được đặt lại thành công!");
       setTimeout(() => {
-        navigate("/login"); // Điều hướng đến trang đăng nhập
+        navigate("/login");
       }, 2000);
     } catch (err) {
       if (err.response && err.response.data) {
@@ -41,10 +46,10 @@ const VerifyOtp = () => {
         setError("Có lỗi xảy ra, vui lòng thử lại.");
       }
     } finally {
-      setLoading(false); // Kết thúc quá trình xử lý
+      setLoading(false);
     }
   };
-
+  
   return (
     <div>
       <h2>Xác Nhận Mã OTP</h2>

@@ -13,14 +13,20 @@ const ForgotPassword = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    setLoading(true); // Bắt đầu quá trình xử lý
+    setLoading(true);
     console.log(username);
+    
     try {
       const response = await axios.post(
         "http://localhost:8080/api/v1/auth/forgot-password",
-        null,
-        { params: { username } }
+        { username },  // Send the username in the request body
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
       );
+      
       setSuccess("Mã OTP đã được gửi đến email của bạn!");
       setTimeout(() => {
         navigate("/verify-otp", { state: { username } });
@@ -32,9 +38,10 @@ const ForgotPassword = () => {
         setError("Có lỗi xảy ra, vui lòng thử lại.");
       }
     } finally {
-      setLoading(false); // Kết thúc quá trình xử lý
+      setLoading(false);
     }
   };
+  
 
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
