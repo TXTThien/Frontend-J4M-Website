@@ -131,10 +131,10 @@ export default function ProductList() {
   return (
     <>
       <div className="product-list-container">
-        <h1>Trang sản phẩm</h1>
+        <h1>Sản phẩm</h1>
         <div className="filters">
           <div className="filter-group">
-            <label htmlFor="category">Category:</label>
+            <label htmlFor="category">Danh mục:</label>
             <select
               id="category"
               value={sortParams.category}
@@ -142,7 +142,7 @@ export default function ProductList() {
                 handleSortParamChange("category", e.target.value)
               }
             >
-              <option value="">All</option>
+              <option value="">Tất cả</option>
               {category.map((c) => (
                 <option key={c.categoryID} value={c.categoryID}>
                   {c.categoryName}
@@ -152,7 +152,7 @@ export default function ProductList() {
           </div>
 
           <div className="filter-group">
-            <label htmlFor="productType">Product Type:</label>
+            <label htmlFor="productType">Loại sản phẩm:</label>
             <select
               id="productType"
               value={sortParams.productType}
@@ -160,7 +160,7 @@ export default function ProductList() {
                 handleSortParamChange("productType", e.target.value)
               }
             >
-              <option value="">All</option>
+              <option value="">Tất cả</option>
               {filteredProductTypes.map((pt) => (
                 <option key={pt.productTypeID} value={pt.productTypeID}>
                   {pt.typeName}
@@ -169,13 +169,13 @@ export default function ProductList() {
             </select>
           </div>
           <div className="filter-group">
-            <label htmlFor="brand">Brand:</label>
+            <label htmlFor="brand">Thương hiệu:</label>
             <select
               id="brand"
               value={sortParams.brand}
               onChange={(e) => handleSortParamChange("brand", e.target.value)}
             >
-              <option value="">All</option>
+              <option value="">Tất cả</option>
               {brand.map((b) => (
                 <option key={b.brandID} value={b.brandID}>
                   {b.brandName}
@@ -184,13 +184,13 @@ export default function ProductList() {
             </select>
           </div>
           <div className="filter-group">
-            <label htmlFor="origin">Origin:</label>
+            <label htmlFor="origin">Xuất xứ:</label>
             <select
               id="origin"
               value={sortParams.origin}
               onChange={(e) => handleSortParamChange("origin", e.target.value)}
             >
-              <option value="">All</option>
+              <option value="">Tất cả</option>
               {origin.map((o) => (
                 <option key={o.originID} value={o.originID}>
                   {o.country}
@@ -205,7 +205,7 @@ export default function ProductList() {
               value={sortParams.size}
               onChange={(e) => handleSortParamChange("size", e.target.value)}
             >
-              <option value="">All</option>
+              <option value="">Tất cả</option>
               {size.map((s) => (
                 <option key={s.sizeID} value={s.sizeID}>
                   {s.sizeName}
@@ -232,9 +232,9 @@ export default function ProductList() {
                     <img src={product.avatar} alt={product.title} />
                   </div>
                   <h2>{product.title}</h2>
-                  <p>Price: ${product.price.toFixed(2)}</p>
-                  <p>Brand: {product.brandID.brandName}</p>
-                  <p>Origin: {product.originID.country}</p>
+                  <p>Giá: {product.price.toLocaleString('vi-VN')} VNĐ</p>
+                  <p>Thương hiệu: {product.brandID.brandName}</p>
+                  <p>Xuất xứ: {product.originID.country}</p>
                 </Link>{" "}
               </div>
             ))}
