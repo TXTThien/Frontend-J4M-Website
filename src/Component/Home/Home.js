@@ -53,8 +53,8 @@ const HomePage = () => {
                 banner.productID?.productID
                   ? `/detail/${banner.productID.productID}`
                   : banner.productTypeID?.productTypeID
-                  ? `/product/sort/?productType=${banner.productTypeID.productTypeID}`
-                  : `/product/sort/?category=${banner.categoryID?.categoryID}`
+                  ? `/product?productType=${banner.productTypeID.productTypeID}`
+                  : `/product?category=${banner.categoryID?.categoryID}`
               }
             >
               <img

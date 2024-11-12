@@ -181,7 +181,7 @@ const Header = () => {
                   categories.map((category) => (
                     <li key={category.categoryID}>
                       <a
-                        href={`/product/sort/?category=${category.categoryID}`}
+                        href={`/product?category=${category.categoryID}`}
                       >
                         {category.categoryName}{" "}
                       </a>

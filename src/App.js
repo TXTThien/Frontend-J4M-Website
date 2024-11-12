@@ -39,6 +39,9 @@ import PaymentFailure from "./J4M/UserAccount/PaymentFailure";
 import PaymentSuccess from "./J4M/UserAccount/PaymentSuccess";
 import ProductDetail from "./J4M/ProductDetail";
 import Find from "./J4M/find";
+import ProductList from "./Component/ProductList/ProductList";
+import NewsDetail from "./J4M/NewsDetail";
+import NewsList from "./J4M/NewsList";
 const App = () => {
   const navigate = useNavigate();
 
@@ -92,7 +95,10 @@ const App = () => {
         <Route path="/AdminProductType" element={<AdminProductType />} />
         <Route path="/PaymentFailure" element={<PaymentFailure />} />
         <Route path="/PaymentSuccess" element={<PaymentSuccess />} />
-        <Route path="/product"/>
+        <Route path="/product" element={<ProductList />} />
+        <Route path="/news" element={<NewsList />} />
+        <Route path="/news/:id" element={<NewsDetail />} />
+
         <Route path="/account" element={<AccountLayout />}>
           <Route index element={<Profile />} />
           <Route path="changepassword" element={<ChangePassword />} />

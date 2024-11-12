@@ -95,12 +95,21 @@ const ProductDetail = () => {
   const handleBuyNow = async () => {
     try {
       const token = localStorage.getItem("access_token");
+      const accountID = localStorage.getItem("accountID");
+
+      if (!accountID) {
+        // Kiểm tra nếu accountID là null hoặc không tồn tại
+        navigate("/login"); // Điều hướng đến trang đăng nhập
+        return; // Dừng thực thi hàm
+      }
+
       const productSizeID = productSizes[selectedSizeIndex].productSizeID;
+
       const response = await axios.post(
         "http://localhost:8080/addToPrebuy",
         {
           productSizeID: productSizeID,
-          accountID: null,
+          accountID: accountID, // Truyền accountID từ localStorage
           status: null,
           number: quantity,
         },
@@ -110,6 +119,7 @@ const ProductDetail = () => {
           },
         }
       );
+
       navigate("/prebuy");
     } catch (error) {
       if (error.response) {
@@ -119,6 +129,7 @@ const ProductDetail = () => {
       }
     }
   };
+
   const ModalSuccess = ({ isVisible, message, onClose }) => {
     if (!isVisible) {
       return null;
@@ -139,6 +150,13 @@ const ProductDetail = () => {
     try {
       const token = localStorage.getItem("access_token");
       const productSizeID = productSizes[selectedSizeIndex].productSizeID;
+      const accountID = localStorage.getItem("accountID");
+
+      if (!accountID) {
+        // Kiểm tra nếu accountID là null hoặc không tồn tại
+        navigate("/login"); // Điều hướng đến trang đăng nhập
+        return; // Dừng thực thi hàm
+      }
       const response = await axios.post(
         "http://localhost:8080/addToPrebuy",
         {
@@ -294,7 +312,7 @@ const ProductDetail = () => {
             {product?.productType?.categoryID && (
               <li style={{ borderRight: "1px solid #7c7c7c71" }}>
                 <Link
-                  to={`/product/sort/?category=${product.productType.categoryID.categoryID}`}
+                  to={`/product?category=${product.productType.categoryID.categoryID}`}
                 >
                   {product.productType.categoryID.categoryName}
                 </Link>
@@ -303,7 +321,7 @@ const ProductDetail = () => {
             {product?.productType && (
               <li style={{ borderRight: "1px solid #7c7c7c71" }}>
                 <Link
-                  to={`/product/sort/?producttype=${product.productType.productTypeID}`}
+                  to={`/product?productType=${product.productType.productTypeID}`}
                 >
                   {product.productType.typeName}
                 </Link>
@@ -409,9 +427,9 @@ const ProductDetail = () => {
                 <button
                   onClick={handleDecrease}
                   className={`decrease-btn ${
-                    quantity >= maxStock ? "disabled" : ""
+                    maxStock===0 ? "disabled" : ""
                   }`}
-                  disabled={quantity >= maxStock}
+                  disabled={maxStock===0}
                 >
                   -
                 </button>
@@ -508,7 +526,7 @@ const ProductDetail = () => {
               {product?.productType?.categoryID && (
                 <li>
                   <Link
-                    to={`/product/sort/?category=${product.productType.categoryID.categoryID}`}
+                    to={`/product?category=${product.productType.categoryID.categoryID}`}
                   >
                     {product.productType.categoryID.categoryName}
                   </Link>
@@ -522,7 +540,7 @@ const ProductDetail = () => {
               {product?.productType && (
                 <li>
                   <Link
-                    to={`/product/sort/?producttype=${product.productType.productTypeID}`}
+                    to={`/product?productType=${product.productType.productTypeID}`}
                   >
                     {product.productType.typeName}
                   </Link>
@@ -537,7 +555,7 @@ const ProductDetail = () => {
             Thương hiệu:
             <h4 className="infodetail">
               <Link
-                to={`/product/sort/?brand=${product.brandID.brandID}`}
+                to={`/product?brand=${product.brandID.brandID}`}
                 className="linkTo"
               >
                 {product.brandID.brandName}
@@ -548,7 +566,7 @@ const ProductDetail = () => {
             Xuất xứ:
             <h4 className="infodetail">
               <Link
-                to={`/product/sort/?origin=${product.originID.originID}`}
+                to={`/product?origin=${product.originID.originID}`}
                 className="linkTo"
               >
                 {product.originID.country}

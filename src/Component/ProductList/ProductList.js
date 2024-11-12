@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./ProductList.css";
 export default function ProductList() {
   const sizePage = 20;
@@ -61,13 +62,14 @@ export default function ProductList() {
       setBrand(brand);
       setOrigin(origin);
       setSize(size);
-      
+      console.log();
       if (initialSortParams) {
         setSortParams(initialSortParams);
-      }else {
+      } else {
         setAllProducts(products);
         setProducts(products.slice(0, visibleCount));
       }
+      console.log(products);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -89,11 +91,25 @@ export default function ProductList() {
       const response = await axios.get("http://localhost:8080/product/sort", {
         params: sortParams,
       });
-      setAllProducts(response.data);
+      const sortedProducts = response.data;
+      setAllProducts(sortedProducts);
+      setProducts(sortedProducts.slice(0, visibleCount));
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
+
+  useEffect(() => {
+    if (Object.values(sortParams).some((val) => val !== "")) {
+      sortProducts();
+    } else {
+      fetchProducts();
+    }
+  }, [sortParams]);
+
+  useEffect(() => {
+    setProducts(allProducts.slice(0, visibleCount));
+  }, [allProducts, visibleCount]);
 
   useEffect(() => {
     const initialSortParams = getQueryParams();
@@ -122,7 +138,9 @@ export default function ProductList() {
             <select
               id="category"
               value={sortParams.category}
-              onChange={(e) => handleSortParamChange("category", e.target.value)}
+              onChange={(e) =>
+                handleSortParamChange("category", e.target.value)
+              }
             >
               <option value="">All</option>
               {category.map((c) => (
@@ -138,7 +156,9 @@ export default function ProductList() {
             <select
               id="productType"
               value={sortParams.productType}
-              onChange={(e) => handleSortParamChange("productType", e.target.value)}
+              onChange={(e) =>
+                handleSortParamChange("productType", e.target.value)
+              }
             >
               <option value="">All</option>
               {filteredProductTypes.map((pt) => (
@@ -195,10 +215,19 @@ export default function ProductList() {
           </div>
         </div>
 
-          <div className="product-grid">
-            {products.length > 0 &&
-              products.map((product) => (
-                <div key={product.productID} className="product-card">
+        <div className="product-grid">
+          {products.length > 0 &&
+            products.map((product) => (
+              <div key={product.productID} className="product-card">
+                <Link
+                  to={`/detail/${product.productID}`}
+                  style={{
+                    textDecoration: "none", 
+                    color: "inherit", 
+                    outline: "none",
+                    cursor: "pointer", 
+                  }}
+                >
                   <div className="img-wrapper">
                     <img src={product.avatar} alt={product.title} />
                   </div>
@@ -206,15 +235,16 @@ export default function ProductList() {
                   <p>Price: ${product.price.toFixed(2)}</p>
                   <p>Brand: {product.brandID.brandName}</p>
                   <p>Origin: {product.originID.country}</p>
-                </div>
-              ))}
-          </div>
+                </Link>{" "}
+              </div>
+            ))}
+        </div>
 
-          <div className="load-button">
-            <button onClick={() => setVisibleCount(visibleCount + sizePage)}>
-              Tải thêm
-            </button>
-          </div>
+        <div className="load-button">
+          <button onClick={() => setVisibleCount(visibleCount + sizePage)}>
+            Tải thêm
+          </button>
+        </div>
       </div>
     </>
   );
