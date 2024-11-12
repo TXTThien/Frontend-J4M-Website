@@ -442,4 +442,18 @@ tr:hover {
     border: 2px solid #ddd; /* Đường viền cho biểu đồ */
     border-radius: 10px; /* Bo góc biểu đồ */
   }
-  
+  label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+  }
+  input[type="file"],
+  select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
