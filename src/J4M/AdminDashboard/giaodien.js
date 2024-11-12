@@ -108,18 +108,18 @@ const Dashboard = () => {
   const prepareChartData = () => {
     const chartData = {};
     bills.forEach(bill => {
-      const date = new Date(bill.date).toLocaleDateString("en-GB");
+      const date = new Date(bill.date[0], bill.date[1] - 1, bill.date[2], bill.date[3], bill.date[4]).toLocaleDateString("en-GB");
       if (!chartData[date]) {
         chartData[date] = 0;
       }
       chartData[date]++;
     });
-
     return {
       labels: Object.keys(chartData),
       data: Object.values(chartData),
     };
   };
+  
   const getChartData = () => {
     const ratingCounts = [0, 0, 0, 0, 0]; // Đếm số lượng đánh giá cho mỗi sao (1-5 sao)
     reviewList.forEach((review) => {

@@ -142,7 +142,9 @@ const AdminBill = () => {
               {bills.map((bill) => (
                 <tr key={bill.billID}>
                   <td>{bill.billID}</td>
-                  <td>{bill.date ? new Date(bill.date).toLocaleDateString("en-GB") : ""}</td>
+                  <td>
+                    {bill.date ? new Date(bill.date[0], bill.date[1] - 1, bill.date[2], bill.date[3], bill.date[4]).toLocaleDateString("en-GB") : ""}
+                  </td>
                   <td>
                     {editingBillId === bill.billID ? (
                       <select
