@@ -35,7 +35,7 @@ const PaymentSuccess = () => {
           fontWeight: "700",
           margin: "0 0 10px 0",
         }}>
-          Thanh toán thành công!
+          Đặt hàng thành công!
         </h1>
         <p style={{ color: "#555555", fontSize: "18px", marginBottom: "30px" }}>
           Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đã được xử lý thành công.
