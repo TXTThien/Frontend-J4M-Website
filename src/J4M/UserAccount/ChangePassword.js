@@ -81,7 +81,7 @@ const ChangePassword = () => {
     <>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <label htmlFor="currentPassword">Current Password</label>
+          <label htmlFor="currentPassword">Mật khẩu</label>
           <input
             id="currentPassword"
             name="currentPassword"
@@ -93,7 +93,7 @@ const ChangePassword = () => {
           {error.currentPassword && <p style={{ color: "red" }}>{error.currentPassword}</p>}
         </div>
         <div className="space-y-2">
-          <label htmlFor="newPassword">New Password</label>
+          <label htmlFor="newPassword">Mật khẩu mới</label>
           <input
             id="newPassword"
             name="newPassword"
@@ -105,7 +105,7 @@ const ChangePassword = () => {
           {error.newPassword && <p style={{ color: "red" }} >{error.newPassword}</p>}
         </div>
         <div className="space-y-2">
-          <label htmlFor="confirmPassword">Confirm New Password</label>
+          <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
           <input
             id="confirmPassword"
             name="confirmPassword"
