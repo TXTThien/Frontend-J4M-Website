@@ -310,8 +310,8 @@ const AdminReview = () => {
                               r.reviewID === review.reviewID ? { ...r, rating } : r
                             )
                           )
-                        , true) // Cho phép chỉnh sửa khi ở chế độ chỉnh sửa
-                      : renderStars(review.rating, null, false) // Không cho chỉnh sửa
+                        , true) 
+                      : renderStars(review.rating, null, false) 
                     }
                   </td>
                   <td>{review.date ? new Date(review.date).toLocaleDateString("en-GB") : ""}</td>
