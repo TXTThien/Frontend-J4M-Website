@@ -238,6 +238,16 @@ const AdminAccount = () => {
           onChange={(e) => handleInputChange(e, null, "address")}
         />
         <br />
+        <div>
+          <label>Vai Trò: </label>
+          <select
+            value={newAccount.role}
+            onChange={(e) => handleInputChange(e, null, "role")}
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
         <button onClick={handleCreate}>Tạo Tài Khoản</button>
       </div>
 
@@ -328,8 +338,19 @@ const AdminAccount = () => {
                     account.status
                   )}
                 </td>
-                <td>{account.role}</td>
                 <td>
+                  {editingAccountId === account.accountID ? (
+                    <select
+                      value={account.role}
+                      onChange={(e) => handleInputChange(e, account.accountID, "role")}
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  ) : (
+                    account.role
+                  )}
+                </td>                <td>
                   {editingAccountId === account.accountID ? (
                     <>
                       <button onClick={() => handleSave(account.accountID, account)}>Lưu</button>

@@ -168,17 +168,17 @@ const AdminReview = () => {
     navigate("/dashboard");
   };
 
-  const renderStars = (rating, onClick) => {
+  const renderStars = (rating, onClick, editable = true) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
         <span
           key={i}
-          onClick={() => onClick(i)}
+          onClick={editable ? () => onClick(i) : null}
           style={{
-            color: i <= rating ? 'gold' : 'lightgray',
-            cursor: 'pointer',
-            fontSize: '40px', 
+            color: i <= rating ? "gold" : "lightgray",
+            cursor: editable ? "pointer" : "default",
+            fontSize: "40px",
           }}
         >
           ★
@@ -187,6 +187,7 @@ const AdminReview = () => {
     }
     return <div>{stars}</div>;
   };
+  
 
   return (
     <div className="admin-ql-container">
@@ -302,19 +303,16 @@ const AdminReview = () => {
                     )}
                   </td>
                   <td>
-                    {editingReviewId === review.reviewID ? (
-                      renderStars(review.rating, (rating) =>
-                        setReviewList((prev) =>
-                          prev.map((r) =>
-                            r.reviewID === review.reviewID
-                              ? { ...r, rating }
-                              : r
+                    {editingReviewId === review.reviewID
+                      ? renderStars(review.rating, (rating) =>
+                          setReviewList((prev) =>
+                            prev.map((r) =>
+                              r.reviewID === review.reviewID ? { ...r, rating } : r
+                            )
                           )
-                        )
-                      )
-                    ) : (
-                      renderStars(review.rating)
-                    )}
+                        , true) // Cho phép chỉnh sửa khi ở chế độ chỉnh sửa
+                      : renderStars(review.rating, null, false) // Không cho chỉnh sửa
+                    }
                   </td>
                   <td>{review.date ? new Date(review.date).toLocaleDateString("en-GB") : ""}</td>
                   <td>
