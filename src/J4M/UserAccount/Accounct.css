@@ -34,37 +34,123 @@ textarea {
   height: 100px;
 }
 /* CSS UserAccount AccountLayout.js */
-.account-layout{
+.account-layout {
   display: flex;
   justify-content: center;
   width: 100%;
+  padding: 2rem;
 }
-.account-outlet{
-  width: 80%;
-  max-width: 1000px;
-  margin: 20px 0;
-  background: #F5F5F5;
-  border-radius: 10px;
-  padding: 10px;
-}
-.account-nav{
+
+.account-nav {
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  padding: 16px;
-  width: 250px; 
-  min-width: 125px;
-  top: 0;
-  left: 0;
+  justify-content: flex-start;
+  padding: 2rem;
+  width: 250px;
+  min-width: 200px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e9ecef;
+}
 
+.account-nav h2 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0;
 }
-.linkToProduct{
+
+.account-nav h2 img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.account-nav h2 div {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-nav h2 span:first-child {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: normal;
+}
+
+.account-nav h2 span:last-child {
+  font-size: 1rem;
+  color: #343a40;
+  font-weight: 600;
+}
+
+.account-nav button {
+  background-color: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 1rem;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.account-nav button:hover,
+.account-nav button:focus {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.account-nav button:last-child {
+  margin-top: auto;
+  color: #dc3545;
+}
+
+.account-nav button:last-child:hover,
+.account-nav button:last-child:focus {
+  background-color: #fce8e8;
+}
+
+.account-outlet {
+  flex-grow: 1;
+  padding: 2rem;
+  width: 80%;
+  max-width: 1000px;
+  background-color: #ffffff;
+}
+
+.linkToProduct {
   text-decoration: none;
-  color: #555555;
+  color: #495057;
+  transition: all 0.2s ease-in-out;
 }
-.linkToProduct:hover{
+
+.linkToProduct:hover {
   font-weight: 500;
-  color: #000000;
+  color: #212529;
+}
+
+@media (max-width: 768px) {
+  .account-layout {
+    padding: 1rem;
+  }
+
+  .account-container {
+    flex-direction: column;
+  }
+
+  .account-nav {
+    width: 100%;
+    min-width: auto;
+    border-right: none;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .account-outlet {
+    padding: 1rem;
+  }
 }
 /* CSS UserAccount Profile.js */
 .profile-container {

@@ -114,19 +114,19 @@ export default function ProductList() {
   useEffect(() => {
     const initialSortParams = getQueryParams();
     fetchProducts(initialSortParams);
-    console.log("1111");
+    console.log("sort params:", sortParams);
   }, [location.search]);
 
   useEffect(() => {
     if (Object.keys(sortParams).some((key) => sortParams[key] !== "")) {
       sortProducts();
     }
-    console.log("2222");
+    console.log("sort params:", sortParams);
   }, [sortParams]);
 
   useEffect(() => {
     setProducts(allProducts.slice(0, visibleCount));
-    console.log("3333");
+    console.log("visible:", visibleCount);
   }, [allProducts, visibleCount]);
   return (
     <>
