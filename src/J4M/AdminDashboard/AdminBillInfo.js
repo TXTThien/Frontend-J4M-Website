@@ -29,6 +29,7 @@ const AdminBillInfo = () => {
 
         const data = await response.json();
         setBillInfos(data);
+        console.log(billInfos)
       } catch (err) {
         setError(err.message);
       } finally {
@@ -92,20 +93,19 @@ const AdminBillInfo = () => {
           <thead>
             <tr>
               <th>ID Thông Tin Hóa Đơn</th>
-              <th>Số Hóa Đơn</th>
+              <th>ID Sản Phẩm</th>
+              <th>Số Lượng</th>
               <th>Trạng Thái</th>
-              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
             {billInfos.map((billInfo) => (
               <tr key={billInfo.billInfoID}>
                 <td>{billInfo.billInfoID}</td>
+                <td>{billInfo.productSizeID.productSizeID}</td>
                 <td>{billInfo.number}</td>
                 <td>{billInfo.status}</td>
-                <td>
-                  <button onClick={() => handleDelete(billInfo.billInfoID)}>Xóa</button>
-                </td>
+               
               </tr>
             ))}
           </tbody>
