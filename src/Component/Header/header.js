@@ -153,7 +153,6 @@ const Header = () => {
           headers: { "Account-ID": accountId },
         });
 
-        // Điều hướng đến trang /find và truyền dữ liệu
         navigate("/find", { state: { results: response.data } });
         setError(null);
       } catch (error) {

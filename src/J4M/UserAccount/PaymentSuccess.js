@@ -5,7 +5,7 @@ const PaymentSuccess = () => {
   const navigate = useNavigate();
 
   const handleBackToHome = () => {
-    navigate("/Prebuy");
+    navigate("/");
   };
 
   return (
