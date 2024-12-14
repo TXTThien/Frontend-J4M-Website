@@ -60,7 +60,7 @@ const AccountLayout = () => {
           </div>
         </h2>
         <button onClick={() => navigate("/account")}>Tài khoản</button>
-        <button onClick={() => navigate("/account/orders")}>Đơn hàng</button>
+        <button onClick={() => navigate("/account/orders")}>Lịch sử mua hàng</button>
         <button onClick={() => navigate("/account/changepassword")}>
           Đổi mật khẩu
         </button>

@@ -426,10 +426,8 @@ const ProductDetail = () => {
                 <h4>Số lượng: </h4>
                 <button
                   onClick={handleDecrease}
-                  className={`decrease-btn ${
-                    maxStock===0 ? "disabled" : ""
-                  }`}
-                  disabled={maxStock===0}
+                  className={`decrease-btn ${maxStock === 0 ? "disabled" : ""}`}
+                  disabled={maxStock === 0}
                 >
                   -
                 </button>
@@ -600,44 +598,42 @@ const ProductDetail = () => {
       </div>
 
       <div className="container">
-        <h1>ĐÁNH GIÁ SẢN PHẨM</h1>
-        <div className="rating">{renderStars(avgScore)}</div>
-        <h3>{avgScore.toFixed(1)}/5.0</h3>
-        <h5>({reviews.length} đánh giá)</h5>
+  <h1>ĐÁNH GIÁ SẢN PHẨM</h1>
+  <div className="rating">{renderStars(avgScore)}</div>
+  <h3>{avgScore.toFixed(1)}/5.0</h3>
+  <h5>({reviews.length} đánh giá)</h5>
 
-        <div className="comment-overview">
-          <div className="cmt-view collapsed">
-            {sortedReviews.map((comment, index) => (
-              <div className="comment_content" key={index}>
-                <div className="reviewer">{comment.accountID.name}</div>
-                <div className="time">
-                  {new Date(comment.date).toLocaleDateString("vi-VN")}
-                </div>
-                <div className="rating-comment">
-                  {commentStars(comment.rating)}
-                </div>
-
-                <div className="comment_text">{comment.comment}</div>
-              </div>
-            ))}
+  <div className="comment-overview">
+    <div className="cmt-view">
+      {currentComments.map((comment, index) => (
+        <div className="comment_content" key={index}>
+          <div className="reviewer">{comment.accountID.name}</div>
+          <div className="time">
+            {new Date(comment.date).toLocaleDateString("vi-VN")}
           </div>
-
-          <div className="pagination">
-            <button onClick={goToPreviousPage} disabled={currentPage === 1}>
-              Trang trước
-            </button>
-            <span>
-              Trang {currentPage} / {totalPages}
-            </span>
-            <button
-              onClick={goToNextPage}
-              disabled={currentPage === totalPages}
-            >
-              Trang sau
-            </button>
-          </div>
+          <div className="rating-comment">{commentStars(comment.rating)}</div>
+          <div className="comment_text">{comment.comment}</div>
         </div>
-      </div>
+      ))}
+    </div>
+
+    <div className="pagination">
+      <button onClick={goToPreviousPage} disabled={currentPage === 1}>
+        Trang trước
+      </button>
+      <span>
+        Trang {currentPage} / {totalPages}
+      </span>
+      <button
+        onClick={goToNextPage}
+        disabled={currentPage === totalPages}
+      >
+        Trang sau
+      </button>
+    </div>
+  </div>
+</div>
+
       <div className="product-detail">
         <div className="product-container">
           <h1 className="other1">Các sản phẩm khác của hãng</h1>
