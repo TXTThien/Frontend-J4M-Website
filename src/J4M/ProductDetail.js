@@ -31,6 +31,8 @@ const ProductDetail = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [howManyBought, setHowManyBought] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [wishlist, setWishlist] = useState([]); 
+
   const commentsPerPage = 5;
   useEffect(() => {
     const fetchData = async () => {
@@ -298,6 +300,25 @@ const ProductDetail = () => {
     }
     return stars;
   };
+  const handleAddToWishlist = () => {
+    if (!product) {
+      console.error("Không có sản phẩm để thêm vào danh sách yêu thích.");
+      return;
+    }
+
+    // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích chưa
+    const isAlreadyInWishlist = wishlist.some(
+      (item) => item.flowerID === product.flowerID
+    );
+
+    if (isAlreadyInWishlist) {
+      console.log("Sản phẩm đã có trong danh sách yêu thích.");
+    } else {
+      setWishlist((prevWishlist) => [...prevWishlist, product]); // Thêm sản phẩm vào danh sách
+      console.log("Đã thêm vào Wishlist:", product);
+    }
+  };
+  
   return (
     <>
       <div className="container">
@@ -388,7 +409,12 @@ const ProductDetail = () => {
           </Grid>
           <Grid item xs={6} className="grid-col-6">
             <div className="infoProduct">
+            <div className="title-container">
               <h1 className="titleProduct">{product?.title}</h1>
+                <button className="add-to-wishlist" onClick={handleAddToWishlist}>
+                  ❤️ Add to Wishlist
+                </button>
+              </div>
               <h6>
                 <span className="avgScore">{avgScore.toFixed(1)}/5.0</span>{" "}
                 <span className="star">★</span>
